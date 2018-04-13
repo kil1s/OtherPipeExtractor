@@ -9,6 +9,8 @@ import org.schabi.newpipe.extractor.kiosk.KioskExtractor;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
 import org.schabi.newpipe.extractor.search.SearchEngine;
+import org.schabi.newpipe.extractor.settings.model.settings.EmptySettings;
+import org.schabi.newpipe.extractor.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
 import org.schabi.newpipe.extractor.subscription.SubscriptionExtractor;
 
@@ -94,5 +96,25 @@ public class SoundcloudService extends StreamingService {
     @Override
     public SubscriptionExtractor getSubscriptionExtractor() {
         return new SoundcloudSubscriptionExtractor(this);
+    }
+
+    @Override
+    public boolean isDynamicSettings() {
+        return false;
+    }
+
+    @Override
+    public void refreshSettings() {
+        // dummy
+    }
+
+    @Override
+    public Settings getSettings() {
+        return new EmptySettings();
+    }
+
+    @Override
+    public void updateSettings(Settings newSettings) {
+        // dummy
     }
 }

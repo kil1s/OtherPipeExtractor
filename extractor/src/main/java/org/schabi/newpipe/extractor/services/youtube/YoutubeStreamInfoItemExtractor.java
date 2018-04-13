@@ -161,7 +161,7 @@ public class YoutubeStreamInfoItemExtractor implements StreamInfoItemExtractor {
             url = te.attr("abs:src");
             // Sometimes youtube sends links to gif files which somehow seem to not exist
             // anymore. Items with such gif also offer a secondary image source. So we are going
-            // to use that if we've caught such an item.
+            // to useable that if we've caught such an item.
             if (url.contains(".gif")) {
                 url = te.attr("abs:data-thumb");
             }

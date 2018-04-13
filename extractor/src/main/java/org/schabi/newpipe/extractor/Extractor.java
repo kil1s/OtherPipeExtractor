@@ -72,7 +72,7 @@ public abstract class Extractor {
 
     /**
      * Fetch the current page.
-     * @param downloader the download to use
+     * @param downloader the download to useable
      * @throws IOException if the page can not be loaded
      * @throws ExtractionException if the pages content is not understood
      */

@@ -20,7 +20,7 @@ public interface Collector<I, E> {
 
     /**
      * Try to extract the item from an extractor without adding it to the collection
-     * @param extractor the extractor to use
+     * @param extractor the extractor to useable
      * @return the item
      * @throws ParsingException thrown if there is an error extracting the
      *                          <b>required</b> fields of the item.

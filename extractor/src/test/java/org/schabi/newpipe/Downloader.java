@@ -1,14 +1,18 @@
 package org.schabi.newpipe;
 
+import org.schabi.newpipe.extractor.HttpHeadExecutionTyp;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -61,6 +65,13 @@ public class Downloader implements org.schabi.newpipe.extractor.Downloader {
         return Downloader.mCookies;
     }
 
+    @Override
+    public String download(String siteUrl, String language, byte[] body) throws IOException, ReCaptchaException {
+        Map<String, String> requestProperties = new HashMap<>();
+        requestProperties.put("Accept-Language", language);
+        return download(siteUrl, requestProperties, body);
+    }
+
     /**
      * Download the text file at the supplied URL as in download(String),
      * but set the HTTP header field "Accept-Language" to the supplied string.
@@ -95,21 +106,36 @@ public class Downloader implements org.schabi.newpipe.extractor.Downloader {
     }
 
     /**
+     * Download the text file at the supplied URL as in download(String),
+     * but custom body and headers.
+     *
+     * @param siteUrl          the URL of the text file to return the contents of
+     * @param customProperties set request header properties
+     * @param body set request body
+     * @return the contents of the specified text file
+     * @throws IOException
+     */
+    public String download(String siteUrl, Map<String, String> customProperties, byte[] body) throws IOException, ReCaptchaException {
+        URL url = new URL(siteUrl);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        for (Map.Entry<String, String> pair: customProperties.entrySet()) {
+            con.setRequestProperty(pair.getKey(), pair.getValue());
+        }
+        OutputStream outputStream = con.getOutputStream();
+        outputStream.write(body);
+        outputStream.close();
+        return dl(con);
+    }
+
+    /**
      * Common functionality between download(String url) and download(String url, String language)
      */
-    private static String dl(HttpsURLConnection con) throws IOException, ReCaptchaException {
+    private static Object[] downloadConAndString(HttpsURLConnection con) throws IOException, ReCaptchaException {
         StringBuilder response = new StringBuilder();
         BufferedReader in = null;
 
         try {
-            con.setConnectTimeout(30 * 1000);// 30s
-            con.setReadTimeout(30 * 1000);// 30s
-            con.setRequestMethod("GET");
-            con.setRequestProperty("User-Agent", USER_AGENT);
-
-            if (getCookies().length() > 0) {
-                con.setRequestProperty("Cookie", getCookies());
-            }
+            con = setupConnection(con, "GET");
 
             in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
@@ -138,7 +164,111 @@ public class Downloader implements org.schabi.newpipe.extractor.Downloader {
             }
         }
 
-        return response.toString();
+        return new Object[]{con, response.toString()};
+    }
+
+    private static HttpsURLConnection setupConnection(HttpsURLConnection con, String method) throws ProtocolException {
+        con.setConnectTimeout(30 * 1000);// 30s
+        con.setReadTimeout(30 * 1000);// 30s
+        con.setRequestMethod(method);
+        con.setRequestProperty("User-Agent", USER_AGENT);
+
+        if (getCookies().length() > 0) {
+            con.setRequestProperty("Cookie", getCookies());
+        }
+
+        return con;
+    }
+
+    /**
+     * Common functionality between download(String url) and download(String url, String language)
+     */
+    private static String dl(HttpsURLConnection con) throws IOException, ReCaptchaException {
+        return (String) downloadConAndString(con)[1];
+    }
+
+    private Map<String, List<String>> headRange(HttpsURLConnection con) throws IOException {
+        BufferedReader in = null;
+        try {
+            con.setRequestProperty("Range","bytes=0-0");
+            con = setupConnection(con, "GET");
+
+            in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream()));
+
+            while (in.readLine() != null) { }
+        } catch (UnknownHostException uhe) {
+            //thrown when there's no internet connection
+            throw new IOException("unknown host or no network", uhe);
+        } catch (Exception e) {
+            throw new IOException(con.getResponseCode() + " " + con.getResponseMessage(), e);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+
+        return con.getHeaderFields();
+    }
+
+    private Map<String, List<String>> headMethodic(HttpsURLConnection con) throws IOException {
+        BufferedReader in = null;
+        try {
+            con = setupConnection(con, "HEAD");
+
+            in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream()));
+
+            while (in.readLine() != null) { }
+        } catch (UnknownHostException uhe) {
+            //thrown when there's no internet connection
+            throw new IOException("unknown host or no network", uhe);
+        } catch (Exception e) {
+            throw new IOException(con.getResponseCode() + " " + con.getResponseMessage(), e);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+
+        return con.getHeaderFields();
+    }
+
+    private Map<String,List<String>> head(HttpsURLConnection con, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+        IOException lastIOException = null;
+        ReCaptchaException lastReCaptchaException = null;
+
+        typs = typs == null || typs.length <= 0 ? HttpHeadExecutionTyp.defaults() : typs;
+        for (HttpHeadExecutionTyp typ:typs) {
+            Map<String,List<String>> headers = null;
+            try {
+                switch (typ) {
+                    case RANGE:
+                        return headRange(con);
+                    case METHOD:
+                        return headMethodic(con);
+                    case FULL_BODY:
+                        con = (HttpsURLConnection) downloadConAndString(con)[0];
+                        return con.getHeaderFields();
+                }
+            } catch (IOException e) {
+                lastReCaptchaException = null;
+                lastIOException = e;
+            } catch (ReCaptchaException re) {
+                lastIOException = null;
+                lastReCaptchaException = re;
+            }
+        }
+
+        if (lastIOException != null) {
+            throw lastIOException;
+        }
+
+        if (lastReCaptchaException != null) {
+            throw lastReCaptchaException;
+        }
+
+        return new HashMap<String, List<String>>();
     }
 
     /**
@@ -153,5 +283,70 @@ public class Downloader implements org.schabi.newpipe.extractor.Downloader {
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         //HttpsURLConnection con = NetCipher.getHttpsURLConnection(url);
         return dl(con);
+    }
+
+    @Override
+    public String download(String siteUrl, byte[] body) throws IOException, ReCaptchaException {
+        URL url = new URL(siteUrl);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        OutputStream outputStream = con.getOutputStream();
+        outputStream.write(body);
+        outputStream.close();
+        return dl(con);
+    }
+
+    @Override
+    public Map<String, List<String>> downloadHead(String siteUrl, String language, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+        Map<String, String> requestProperties = new HashMap<>();
+        requestProperties.put("Accept-Language", language);
+        return downloadHead(siteUrl, requestProperties, body, typs);
+    }
+
+    @Override
+    public Map<String, List<String>> downloadHead(String siteUrl, String language, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+        Map<String, String> requestProperties = new HashMap<>();
+        requestProperties.put("Accept-Language", language);
+        return downloadHead(siteUrl, requestProperties, typs);
+    }
+
+    @Override
+    public Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+        URL url = new URL(siteUrl);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        for (Map.Entry<String, String> pair: customProperties.entrySet()) {
+            con.setRequestProperty(pair.getKey(), pair.getValue());
+        }
+        return head(con, typs);
+    }
+
+    @Override
+    public Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+        URL url = new URL(siteUrl);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        for (Map.Entry<String, String> pair: customProperties.entrySet()) {
+            con.setRequestProperty(pair.getKey(), pair.getValue());
+        }
+        OutputStream outputStream = con.getOutputStream();
+        outputStream.write(body);
+        outputStream.close();
+        return head(con, typs);
+    }
+
+    @Override
+    public Map<String, List<String>> downloadHead(String siteUrl, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+        URL url = new URL(siteUrl);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        //HttpsURLConnection con = NetCipher.getHttpsURLConnection(url);
+        return head(con, typs);
+    }
+
+    @Override
+    public Map<String, List<String>> downloadHead(String siteUrl, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+        URL url = new URL(siteUrl);
+        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        OutputStream outputStream = con.getOutputStream();
+        outputStream.write(body);
+        outputStream.close();
+        return head(con, typs);
     }
 }

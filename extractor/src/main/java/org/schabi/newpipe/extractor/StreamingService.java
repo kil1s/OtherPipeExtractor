@@ -2,12 +2,15 @@ package org.schabi.newpipe.extractor;
 
 import org.schabi.newpipe.extractor.channel.ChannelExtractor;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
+import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
 import org.schabi.newpipe.extractor.search.SearchEngine;
+import org.schabi.newpipe.extractor.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
 import org.schabi.newpipe.extractor.subscription.SubscriptionExtractor;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,6 +64,11 @@ public abstract class StreamingService {
     public String toString() {
         return serviceId + ":" + serviceInfo.getName();
     }
+
+    public abstract boolean isDynamicSettings();
+    public abstract void refreshSettings() throws IOException, ReCaptchaException;
+    public abstract Settings getSettings();
+    public abstract void updateSettings(Settings newSettings);
 
     public abstract UrlIdHandler getStreamUrlIdHandler();
     public abstract UrlIdHandler getChannelUrlIdHandler();

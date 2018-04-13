@@ -3,6 +3,7 @@ package org.schabi.newpipe.extractor;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -36,6 +37,18 @@ public interface Downloader {
      * @return the contents of the specified text file
      * @throws IOException
      */
+    String download(String siteUrl, String language, byte[] body) throws IOException, ReCaptchaException;
+
+
+    /**
+     * Download the text file at the supplied URL as in download(String),
+     * but set the HTTP header field "Accept-Language" to the supplied string.
+     *
+     * @param siteUrl  the URL of the text file to return the contents of
+     * @param language the language (usually a 2-character code) to set as the preferred language
+     * @return the contents of the specified text file
+     * @throws IOException
+     */
     String download(String siteUrl, String language) throws IOException, ReCaptchaException;
 
     /**
@@ -50,6 +63,19 @@ public interface Downloader {
     String download(String siteUrl, Map<String, String> customProperties) throws IOException, ReCaptchaException;
 
     /**
+     * Download the text file at the supplied URL as in download(String),
+     * but custom body and headers.
+     *
+     * @param siteUrl          the URL of the text file to return the contents of
+     * @param customProperties set request header properties
+     * @param body set request body
+     * @return the contents of the specified text file
+     * @throws IOException
+     */
+    String download(String siteUrl, Map<String, String> customProperties, byte[] body) throws IOException, ReCaptchaException;
+
+
+    /**
      * Download (via HTTP) the text file located at the supplied URL, and return its contents.
      * Primarily intended for downloading web pages.
      *
@@ -58,4 +84,81 @@ public interface Downloader {
      * @throws IOException
      */
     String download(String siteUrl) throws IOException, ReCaptchaException;
+
+    /**
+     * Download (via HTTP) the text file located at the supplied URL, and return its contents.
+     * Primarily intended for downloading web pages.
+     *
+     * @param siteUrl the URL of the text file to download
+     * @return the contents of the specified text file
+     * @throws IOException
+     */
+    String download(String siteUrl, byte[] body) throws IOException, ReCaptchaException;
+
+    /**
+     * Download the headers at the supplied URL as in download(String),
+     * but set the HTTP header field "Accept-Language" to the supplied string.
+     *
+     * @param siteUrl  the URL of the text file to return the contents of
+     * @param language the language (usually a 2-character code) to set as the preferred language
+     * @return headers
+     * @throws IOException
+     */
+    Map<String, List<String>> downloadHead(String siteUrl, String language, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException;
+
+
+    /**
+     * Download the text file at the supplied URL as in download(String),
+     * but set the HTTP header field "Accept-Language" to the supplied string.
+     *
+     * @param siteUrl  the URL of the text file to return the contents of
+     * @param language the language (usually a 2-character code) to set as the preferred language
+     * @return the contents of the specified text file
+     * @throws IOException
+     */
+    Map<String, List<String>> downloadHead(String siteUrl, String language, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException;
+
+    /**
+     * Download the headers at the supplied URL as in download(String),
+     * but set the HTTP header field "Accept-Language" to the supplied string.
+     *
+     * @param siteUrl          the URL of the text file to return the contents of
+     * @param customProperties set request header properties
+     * @return headers
+     * @throws IOException
+     */
+    Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException;
+
+    /**
+     * Download the headers at the supplied URL as in download(String),
+     * but custom body and headers.
+     *
+     * @param siteUrl          the URL of the text file to return the contents of
+     * @param customProperties set request header properties
+     * @param body set request body
+     * @return headers
+     * @throws IOException
+     */
+    Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException;
+
+
+    /**
+     * Download (via HTTP) the headers located at the supplied URL, and return its contents.
+     * Primarily intended for downloading web pages.
+     *
+     * @param siteUrl the URL of the text file to download
+     * @return headers
+     * @throws IOException
+     */
+    Map<String, List<String>> downloadHead(String siteUrl, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException;
+
+    /**
+     * Download (via HTTP) the headers located at the supplied URL, and return its contents.
+     * Primarily intended for downloading web pages.
+     *
+     * @param siteUrl the URL of the text file to download
+     * @return headers
+     * @throws IOException
+     */
+    Map<String, List<String>> downloadHead(String siteUrl, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException;
 }

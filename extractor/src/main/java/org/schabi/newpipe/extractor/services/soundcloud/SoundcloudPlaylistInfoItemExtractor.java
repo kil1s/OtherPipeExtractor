@@ -56,7 +56,7 @@ public class SoundcloudPlaylistInfoItemExtractor implements PlaylistInfoItemExtr
         }
 
         try {
-            // Last resort, use user avatar url. If still not found, then throw exception.
+            // Last resort, useable user avatar url. If still not found, then throw exception.
             return itemObject.getObject(USER_KEY).getString(AVATAR_URL_KEY, "");
         } catch (Exception e) {
             throw new ParsingException("Failed to extract playlist thumbnail url", e);

@@ -17,7 +17,7 @@ public abstract class ListExtractor<R extends InfoItem> extends Extractor {
     }
 
     /**
-     * A {@link InfoItemsPage InfoItemsPage} corresponding to the initial page where the items are from the initial request and
+     * A {@link InfoItemsPage InfoItemsPage} corresponding to the initial page where the items are from the initial url and
      * the nextPageUrl relative to it.
      *
      * @return a {@link InfoItemsPage} corresponding to the initial page

@@ -137,7 +137,7 @@ public class YoutubeStreamExtractor extends StreamExtractor {
     @Override
     public String getThumbnailUrl() throws ParsingException {
         assertPageFetched();
-        // Try to get high resolution thumbnail first, if it fails, use low res from the player instead
+        // Try to get high resolution thumbnail first, if it fails, useable low res from the player instead
         try {
             return doc.select("link[itemprop=\"thumbnailUrl\"]").first().attr("abs:href");
         } catch (Exception ignored) {
@@ -749,7 +749,7 @@ public class YoutubeStreamExtractor extends StreamExtractor {
 
         final JsonObject renderer = captions.getObject("playerCaptionsTracklistRenderer", new JsonObject());
         final JsonArray captionsArray = renderer.getArray("captionTracks", new JsonArray());
-        // todo: use this to apply auto translation to different language from a source language
+        // todo: useable this to apply auto translation to different language from a source language
         final JsonArray autoCaptionsArray = renderer.getArray("translationLanguages", new JsonArray());
 
         // This check is necessary since there may be cases where subtitles metadata do not contain caption track info
@@ -913,7 +913,7 @@ public class YoutubeStreamExtractor extends StreamExtractor {
                 String thumbnailUrl = img.attr("abs:src");
                 // Sometimes youtube sends links to gif files which somehow seem to not exist
                 // anymore. Items with such gif also offer a secondary image source. So we are going
-                // to use that if we caught such an item.
+                // to useable that if we caught such an item.
                 if (thumbnailUrl.contains(".gif")) {
                     thumbnailUrl = img.attr("data-thumb");
                 }

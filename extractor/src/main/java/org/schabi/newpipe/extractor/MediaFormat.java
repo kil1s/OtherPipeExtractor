@@ -28,14 +28,16 @@ package org.schabi.newpipe.extractor;
 
 public enum MediaFormat {
     //video and audio combined formats
-    //           id      name    suffix  mime type
-    MPEG_4      (0x0,   "MPEG-4", "mp4", "video/mp4"),
-    v3GPP       (0x1,   "3GPP",   "3gp", "video/3gpp"),
-    WEBM        (0x2,   "WebM",  "webm", "video/webm"),
+    //           id      name       suffix  mime type
+    MPEG_4      (0x0,   "MPEG-4",   "mp4", "video/mp4"),
+    v3GPP       (0x1,   "3GPP",     "3gp", "video/3gpp"),
+    WEBM        (0x2,   "WebM",     "webm", "video/webm"),
     // audio formats
-    M4A         (0x3,   "m4a",   "m4a",  "audio/mp4"),
-    WEBMA       (0x4,   "WebM",  "webm", "audio/webm"),
-    MP3         (0x5,   "MP3",   "mp3",  "audio/mpeg");
+    M4A         (0x3,   "m4a",      "m4a",  "audio/mp4"),
+    WEBMA       (0x4,   "WebM",     "webm", "audio/webm"),
+    MP3         (0x5,   "MP3",      "mp3",  "audio/mpeg"),
+    // other formats
+    UNKNOWN     (0x6,   "Unknown",  "",  "");
 
     public final int id;
     public final String name;
