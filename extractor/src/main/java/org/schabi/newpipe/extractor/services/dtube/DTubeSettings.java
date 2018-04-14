@@ -6,15 +6,20 @@ import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
 import org.schabi.newpipe.extractor.Downloader;
 import org.schabi.newpipe.extractor.NewPipe;
+import org.schabi.newpipe.extractor.constants.Encodings;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 import org.schabi.newpipe.extractor.settings.exceptions.WrongSettingsDataException;
 import org.schabi.newpipe.extractor.settings.model.provider.StringListProvider;
 import org.schabi.newpipe.extractor.settings.model.settings.abstracts.OverrideDynamicSettings;
 import org.schabi.newpipe.extractor.url.helper.UrlParsingHelper;
+import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
+import org.schabi.newpipe.extractor.url.model.UrlQueryState;
+import org.schabi.newpipe.extractor.url.model.UrlRawQuery;
 import org.schabi.newpipe.extractor.url.model.protocol.UrlProtocolTyp;
 import org.schabi.newpipe.extractor.url.navigator.UrlNavigator;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,10 +35,15 @@ public class DTubeSettings extends OverrideDynamicSettings {
      *
      * @return List of all gateways that are not 127.0.0.1 or localhost and using https
      */
-    public static List<String> getSafeIPFSGateways(List<String> gateways) {
+    public static List<String> getSafeIPFSGateways(List<String> gateways) throws UnsupportedEncodingException {
         List<String> safeGateways = new ArrayList<String>();
         for (String gateway:gateways) {
-            UrlNavigator navi = UrlParsingHelper.parseTillPort(gateway);
+            UrlNavigator navi = UrlParsingHelper.parseTillPort(
+                    gateway,
+                    Encodings.UTF_8,
+                    false,
+                    UrlQueryState.PUBLIC
+            );
 
             boolean isUnsafe = navi.gotDomain("127.0.0.1") && navi.gotDomain("localhost");
             if ((!isUnsafe) && navi.gotProtocol(UrlProtocolTyp.HTTPS)) {
@@ -60,10 +70,8 @@ public class DTubeSettings extends OverrideDynamicSettings {
 
                             UrlNavigator navi = UrlParsingHelper.parse(
                                     url,
-                                    true,
-                                    true,
-                                    true,
-                                    "UTF-8"
+                                    Encodings.UTF_8,
+                                    UrlParsingFeature.values()
                             );
                             if (navi.gotProtocol(UrlProtocolTyp.HTTPS)) {
                                 urls.add(url);

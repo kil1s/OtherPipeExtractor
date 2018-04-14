@@ -1,19 +1,14 @@
 package org.schabi.newpipe.extractor.url.model;
 
 public class UrlRawQuery<T> {
-    public enum UrlRawQueryState {
-        PRIVATE,
-        PUBLIC,
-        OTHER
-    }
     private T value;
-    private UrlRawQueryState state;
+    private UrlQueryState state;
 
     public UrlRawQuery(T value) {
-        this(value, UrlRawQueryState.OTHER);
+        this(value, UrlQueryState.OTHER);
     }
 
-    public UrlRawQuery(T value, UrlRawQueryState state) {
+    public UrlRawQuery(T value, UrlQueryState state) {
         this.value = value;
         this.state = state;
     }
@@ -22,7 +17,7 @@ public class UrlRawQuery<T> {
         return value;
     }
 
-    public UrlRawQueryState getState() {
+    public UrlQueryState getState() {
         return state;
     }
 }

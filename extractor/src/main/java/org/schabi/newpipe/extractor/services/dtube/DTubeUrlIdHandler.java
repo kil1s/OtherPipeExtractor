@@ -4,6 +4,7 @@ import org.schabi.newpipe.extractor.UrlIdHandler;
 import org.schabi.newpipe.extractor.constants.Encodings;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.url.helper.UrlParsingHelper;
+import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
 import org.schabi.newpipe.extractor.url.model.UrlQuery;
 import org.schabi.newpipe.extractor.url.model.list.UrlPseudoQueryList;
 import org.schabi.newpipe.extractor.url.model.list.filepath.UrlFilepathPrivate;
@@ -46,7 +47,12 @@ public class DTubeUrlIdHandler implements UrlIdHandler {
     @Override
     public String getUrl(String id) throws ParsingException {
         try {
-            List<String> partsFromPath = UrlParsingHelper.getPartsFromPath(id, true, "UTF-8", UrlParsingHelper.FILE_PATH_DELIMITER);
+            List<String> partsFromPath = UrlParsingHelper.getPartsFromPath(
+                    id,
+                    true,
+                    Encodings.UTF_8,
+                    UrlParsingHelper.FILE_PATH_DELIMITER
+            );
             if (partsFromPath.size() > 0) {
                 String firstPart = partsFromPath.get(0);
                 if (firstPart.startsWith("@")) {
@@ -74,10 +80,8 @@ public class DTubeUrlIdHandler implements UrlIdHandler {
         try {
             UrlNavigator navi = UrlParsingHelper.parse(
                     url,
-                    true,
-                    true,
-                    true,
-                    Encodings.UTF_8
+                    Encodings.UTF_8,
+                    UrlParsingFeature.values()
             );
 
             for (UrlQuery queryPath:navi.getFilepaths()) {
@@ -106,10 +110,8 @@ public class DTubeUrlIdHandler implements UrlIdHandler {
         try {
             UrlNavigator navi = UrlParsingHelper.parse(
                     url,
-                    true,
-                    true,
-                    true,
-                    Encodings.UTF_8
+                    Encodings.UTF_8,
+                    UrlParsingFeature.values()
             );
             for (UrlQuery queryPath:navi.getFilepaths()) {
                 UrlPseudoQueryList<String> filepath = (UrlPseudoQueryList<String>) queryPath;
@@ -134,10 +136,8 @@ public class DTubeUrlIdHandler implements UrlIdHandler {
         try {
             UrlNavigator navi = UrlParsingHelper.parse(
                     url,
-                    true,
-                    true,
-                    true,
-                    Encodings.UTF_8
+                    Encodings.UTF_8,
+                    UrlParsingFeature.values()
             );
             boolean noWrongProtocol = navi.gotProtocol(UrlProtocolTyp.HTTP) || navi.gotProtocol(UrlProtocolTyp.HTTPS);
             if (noWrongProtocol && navi.gotDomain("d.tube")) {

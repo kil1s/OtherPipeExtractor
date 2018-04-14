@@ -3,6 +3,7 @@ package org.schabi.newpipe.extractor.url.helper;
 import org.schabi.newpipe.extractor.feature.Features;
 import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
 import org.schabi.newpipe.extractor.url.model.UrlQuery;
+import org.schabi.newpipe.extractor.url.model.UrlQueryState;
 import org.schabi.newpipe.extractor.url.model.UrlRawQuery;
 import org.schabi.newpipe.extractor.url.model.list.UrlQueryList;
 import org.schabi.newpipe.extractor.url.model.protocol.UrlProtocolTyp;
@@ -40,7 +41,8 @@ public class UrlParsingHelper {
      * \_________________________________________________________/ \_______________________________/  \_______________________/ \__/
      *                            |                                                |                               |              |
      *                          public                                           private                       private         private
-     * everything is a query (the js strat everthing is a function :)
+     * everything is a query
+     * but the word query is mostly used for the params
      *
      * private delimiters = #! #? #
      * the #? delimiter is not a indicator for params or map
@@ -55,7 +57,7 @@ public class UrlParsingHelper {
      * This helper only throws in some cases a UnsupportedEncodingException if is right programmed this never get thrown
      */
     public static final String FILE_PATH_DELIMITER = "/";
-    public static final String DOMAIN_DELIMITER = ".";
+    public static final String DOMAIN_DELIMITER = "\\.";
 
     /*
      * parse - get a url navigator from the url
@@ -79,8 +81,8 @@ public class UrlParsingHelper {
      * @param String encoding
      * @return UrlNavigator
      */
-    public static UrlNavigator parseTillPort(String url) {
-        return new UrlNavigator(getQueriesFromRawRequest(getRawRequestFromUrl(url)));
+    public static UrlNavigator parseTillPort(String url, String encoding, boolean removeEmptyDomains, UrlQueryState state) throws UnsupportedEncodingException {
+        return new UrlNavigator(getQueriesFromRawRequest(getRawRequestFromUrl(url), encoding, removeEmptyDomains, state));
     }
 
     /*
@@ -96,12 +98,40 @@ public class UrlParsingHelper {
         List<UrlQuery> queries = new ArrayList<UrlQuery>();
 
         RawUrlRequest urlRequest = getRawRequestFromUrl(url);
-        queries.addAll(getQueriesFromRawRequest(urlRequest));
-        queries.addAll(getQueriesFromRequestPath(urlRequest.getRequest(), encoding, features));
+        queries.addAll(getQueriesFromRawRequest(urlRequest, encoding, new Features<UrlParsingFeature>(features).got(UrlParsingFeature.REMOVE_EMPTY_DOMAIN_PART), UrlQueryState.PUBLIC));
+        queries.addAll(getQueriesFromRequestPath(urlRequest.getFilepath(), encoding, features));
         return queries;
     }
 
-    public static List<UrlQuery> getQueriesFromRawRequest(RawUrlRequest urlRequest) {
+    public static List<UrlQuery> getQueriesFromRawRequest(RawUrlRequest urlRequest, String encoding, boolean removeEmptyDomains, UrlQueryState state) throws UnsupportedEncodingException {
+        List<UrlQuery> queries = new ArrayList<UrlQuery>();
+
+        queries.add(getProtocolTypFromRawRequest(urlRequest));
+        String domain = urlRequest.getDomain();
+        if (domain != null) {
+            UrlQueryList<String> parts = (UrlQueryList<String>) getPartsFromPath(
+                    domain,
+                    removeEmptyDomains,
+                    encoding,
+                    DOMAIN_DELIMITER
+            );
+            switch (state) {
+                case PUBLIC:
+                    queries.add(parts.toPublicDomain());
+                    break;
+                case PRIVATE:
+                    queries.add(parts.toPrivateDomain());
+                    break;
+                case OTHER:
+                    queries.add(parts);
+                    break;
+            }
+        }
+
+        return queries;
+    }
+
+    public static UrlProtocolTyp getProtocolTypFromRawRequest(RawUrlRequest urlRequest) {
         List<UrlQuery> queries = new ArrayList<UrlQuery>();
 
         String protocol = urlRequest.getProtocol();
@@ -119,12 +149,12 @@ public class UrlParsingHelper {
         boolean gotPort = port != null;
 
         if (gotProtocol && gotPort) {
-            queries.add(UrlProtocolTyp.selectProtocolByName(protocol, port));
+            return UrlProtocolTyp.selectProtocolByName(protocol, port);
         } else if (gotProtocol) {
-            queries.add(UrlProtocolTyp.selectProtocolByName(protocol));
+            return UrlProtocolTyp.selectProtocolByName(protocol);
         }
 
-        return queries;
+        return UrlProtocolTyp.UNKNOWN;
     }
 
     /*
@@ -140,13 +170,18 @@ public class UrlParsingHelper {
         String request = null;
 
         String urlWithoutProtocol = url;
-        String[] requestSplit = url.split("(:\\/\\/|:)");
-        if (requestSplit.length > 1) {
-            protocol = requestSplit[0];
-            urlWithoutProtocol = url.substring(protocol.length());
+        // TODO better string splitting functions - multi split instead of regex ':','://' split_time=1
+        String[] shortRequestSplit = url.split(":");
+        if (shortRequestSplit.length > 1) {
+            protocol = shortRequestSplit[0];
+            String rawProtocolSuffixed = shortRequestSplit[0]+":";
+            if (shortRequestSplit[1].startsWith("//")) {
+                rawProtocolSuffixed += "//";
+            }
+            urlWithoutProtocol = url.substring(rawProtocolSuffixed.length());
         }
 
-        // TODO better string splitting functions
+        // TODO better string splitting functions - split with split time split_time=1
         String[] pathParts = urlWithoutProtocol.split("/");
         String domainAndPort = pathParts[0];
         String[] portSplit = domainAndPort.split(":");
@@ -159,7 +194,7 @@ public class UrlParsingHelper {
 
             if (portOrientated) {
                 port = portSplit[portSplit.length - 1];
-                domain = domainAndPort.substring(0, port.length() - 1);
+                domain = domainAndPort.substring(0, domainAndPort.length()-port.length()-1);
             } else if (pathOrientated) {
                 domain = domainAndPort;
             }
@@ -179,7 +214,6 @@ public class UrlParsingHelper {
      */
     public static UrlRawQuery[] getRawQueriesFromRequest(String request, boolean removeEmpty) {
         // TODO use a better method for detect private and public query
-        List<String> parts = new ArrayList<String>();
         List<String> privateParts = new ArrayList<String>();
 
         boolean isFirstQuery = true;
@@ -196,18 +230,13 @@ public class UrlParsingHelper {
             privateParts.add(part);
         }
 
-        return new UrlRawQuery[]{
+        return new UrlRawQuery[] {
                 getRawQueryFromFirstQuery(firstQuery, removeEmpty),
-                new UrlRawQuery<List<String>>(parts, UrlRawQuery.UrlRawQueryState.PUBLIC),
-                new UrlRawQuery<List<String>>(parts, UrlRawQuery.UrlRawQueryState.PRIVATE)
+                new UrlRawQuery<List<String>>(privateParts, UrlQueryState.PRIVATE)
         };
     }
 
     public static UrlRawQuery getRawQueryFromFirstQuery(String firstQuery, boolean removeEmpty) {
-        if (firstQuery == null) {
-            return new UrlRawQuery<String>("");
-        }
-
         List<String> parts = new ArrayList<String>();
         if (firstQuery != null) {
             for (String part : firstQuery.split("\\?")) {
@@ -217,7 +246,7 @@ public class UrlParsingHelper {
                 parts.add(part);
             }
         }
-        return new UrlRawQuery<String>(firstQuery);
+        return new UrlRawQuery<List<String>>(parts, UrlQueryState.PUBLIC);
     }
 
     /*
@@ -235,17 +264,15 @@ public class UrlParsingHelper {
 
         UrlRawQuery[] rawQuerys = getRawQueriesFromRequest(requestPath, check.got(UrlParsingFeature.REMOVE_EMPTY_QUERY));
         for (UrlRawQuery rawQuery:rawQuerys) {
-            if (rawQuery.getValue() instanceof String) {
-                queries.addAll(getQueriesFromDomainFilePath((String) rawQuery.getValue(), check.got(UrlParsingFeature.REMOVE_EMPTY_DOMAIN_PART), false, encoding));
-            } else if (rawQuery.getValue() instanceof List) {
-                if (rawQuery.getState() == UrlRawQuery.UrlRawQueryState.PRIVATE) {
+            if (rawQuery.getValue() instanceof List) {
+                if (rawQuery.getState() == UrlQueryState.PRIVATE) {
                     // PrivateQueryList
                     for (String strPrivateQuery:(List<String>) rawQuery.getValue()) {
                         if (check.got(UrlParsingFeature.PRIVATE_URL_SUPPORT)) {
-                            RawUrlRequest request = getRawRequestFromUrl((String) rawQuery.getValue());
-                            queries.addAll(getQueriesFromRawRequest(request));
+                            RawUrlRequest request = getRawRequestFromUrl(strPrivateQuery);
+                            queries.addAll(getQueriesFromRawRequest(request, encoding, check.got(UrlParsingFeature.REMOVE_EMPTY_PATH_PART), UrlQueryState.PRIVATE));
 
-                            String strRequest = request.getRequest();
+                            String strRequest = request.getFilepath();
                             if (strRequest != null) {
                                 strPrivateQuery = strRequest;
                             } else {
@@ -254,9 +281,20 @@ public class UrlParsingHelper {
                         }
                         queries.add(getUrlParamsQueryFromRawQuery(strPrivateQuery, encoding).toPrivate());
                     }
-                } else if (rawQuery.getState() == UrlRawQuery.UrlRawQueryState.PUBLIC) {
+                } else if (rawQuery.getState() == UrlQueryState.PUBLIC) {
+                    boolean first = true;
                     // PublicQueryList
                     for (String strPublicQuery:(List<String>) rawQuery.getValue()) {
+                        if (first) {
+                            queries.add(((UrlQueryList<String>) getPartsFromPath(
+                                    strPublicQuery,
+                                    check.got(UrlParsingFeature.REMOVE_EMPTY_PATH_PART),
+                                    encoding,
+                                    FILE_PATH_DELIMITER
+                            )).toPublicFilepath());
+                            first = false;
+                            continue;
+                        }
                         queries.add(getUrlParamsQueryFromRawQuery(strPublicQuery, encoding).toPublic());
                     }
                 }
@@ -278,11 +316,21 @@ public class UrlParsingHelper {
     public static List<UrlQuery> getQueriesFromDomainFilePath(String domainFilePath, boolean removeEmptyPart, boolean privat, String encoding) throws UnsupportedEncodingException {
         List<UrlQuery> queries = new ArrayList<UrlQuery>();
 
-        UrlQueryList<String> queryList = (UrlQueryList<String>) getPartsFromPath(domainFilePath, removeEmptyPart, encoding, FILE_PATH_DELIMITER);
+        UrlQueryList<String> queryList = (UrlQueryList<String>) getPartsFromPath(
+                domainFilePath,
+                removeEmptyPart,
+                encoding,
+                FILE_PATH_DELIMITER
+        );
         String domain = queryList.get(0);
         if (domain.split(DOMAIN_DELIMITER).length > 1) {
             queryList.remove(domain);
-            UrlQueryList<String> domainList = (UrlQueryList<String>) getPartsFromPath(domain, removeEmptyPart, encoding, DOMAIN_DELIMITER);
+            UrlQueryList<String> domainList = (UrlQueryList<String>) getPartsFromPath(
+                    domain,
+                    removeEmptyPart,
+                    encoding,
+                    DOMAIN_DELIMITER
+            );
             queries.add(privat ? domainList.toPrivateDomain() : domainList.toPublicDomain());
         }
         queries.add(privat ? queryList.toPrivateFilepath() : queryList.toPublicFilepath());
@@ -314,7 +362,7 @@ public class UrlParsingHelper {
                 query.add(key);
                 continue;
             }
-            query.add(key, value);
+            query.add(key, value.substring(1));
         }
 
         return query;

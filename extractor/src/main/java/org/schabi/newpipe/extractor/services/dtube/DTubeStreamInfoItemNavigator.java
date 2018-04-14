@@ -15,6 +15,7 @@ import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.stream.StreamInfoItemsCollector;
 import org.schabi.newpipe.extractor.url.helper.UrlParsingHelper;
+import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
 import org.schabi.newpipe.extractor.url.model.UrlQuery;
 import org.schabi.newpipe.extractor.url.navigator.UrlNavigator;
 
@@ -103,10 +104,8 @@ public class DTubeStreamInfoItemNavigator {
     public ListExtractor.InfoItemsPage<StreamInfoItem> getPage(String nextPageUrl) throws IOException, ExtractionException {
         UrlNavigator navi = UrlParsingHelper.parse(
                 nextPageUrl,
-                true,
-                true,
-                true,
-                Encodings.UTF_8
+                Encodings.UTF_8,
+                UrlParsingFeature.values()
         );
 
         List<UrlQuery> publicParams = navi.getPublicParams();

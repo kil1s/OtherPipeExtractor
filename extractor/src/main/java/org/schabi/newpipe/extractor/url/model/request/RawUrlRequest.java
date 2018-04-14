@@ -2,19 +2,19 @@ package org.schabi.newpipe.extractor.url.model.request;
 
 public class RawUrlRequest {
     private String protocol;
-    private String request;
-    private String port;
     private String filepath;
+    private String port;
+    private String domain;
 
-    public RawUrlRequest(String protocol, String filepath, String port, String request) {
+    public RawUrlRequest(String protocol, String domain, String port, String filepath) {
         this.protocol = protocol;
-        this.request = request;
-        this.port = port;
         this.filepath = filepath;
+        this.port = port;
+        this.domain = domain;
     }
 
-    public String getFilepath() {
-        return filepath;
+    public String getDomain() {
+        return domain;
     }
 
     public String getPort() {
@@ -25,7 +25,7 @@ public class RawUrlRequest {
         return protocol;
     }
 
-    public String getRequest() {
-        return request;
+    public String getFilepath() {
+        return filepath;
     }
 }

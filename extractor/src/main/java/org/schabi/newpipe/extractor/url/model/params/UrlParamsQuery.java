@@ -11,7 +11,7 @@ public class UrlParamsQuery extends HashMap<String, List<String>> implements Url
         KEY_VALUE
     }
 
-    private List<String> options;
+    private List<String> options = new ArrayList<String>();
 
     private GOT gotTyp(String key) {
         if (this.containsKey(key)) {
@@ -35,8 +35,9 @@ public class UrlParamsQuery extends HashMap<String, List<String>> implements Url
         if (!this.containsKey(key)) {
             this.put(key, new ArrayList<String>());
         }
-        List<String> listValue = this.get(key);
+        List<String> listValue = super.get(key);
         listValue.add(value);
+        this.put(key, listValue);
     }
 
     @Override
