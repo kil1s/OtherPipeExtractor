@@ -1,5 +1,7 @@
 package org.schabi.newpipe.extractor.url.helper;
 
+import org.schabi.newpipe.extractor.feature.Features;
+import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
 import org.schabi.newpipe.extractor.url.model.UrlQuery;
 import org.schabi.newpipe.extractor.url.model.UrlRawQuery;
 import org.schabi.newpipe.extractor.url.model.list.UrlQueryList;
@@ -14,6 +16,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UrlParsingHelper {
+    /*
+     * This is not RFC3986 this is own norm that tries to parsing the living standard
+     * This is error-, regex- and private-less, option-full written with high level functions
+     *
+     * Norm explained in ascii:
+     * foo://example.com:8042/over/there?name=ferret&other&another#foo://example.com:8042/over/there#?name=ferret&other&anothh#!ando
+     * |  |   \_____/ \_/ |  |\___/ \___/ \__/ \____/ \___/ \____/ |  |   \_____/ \_/ |  |\___/ \___/ \__/ \____/ \___/ \____/  \__/
+     * |  |     \      /  |  |  \     /   key   value    options   |  |     \      /  |  |  \     /   key   value    options   option
+     * |  |      \    /   |  |   \   /     \_______/  \__________/ |  |      \    /   |  |   \   /     \_______/  \__________/  \__/
+     * |  |       \  /    |  |    \ /          |               |   |  |       \  /    |  |    \ /          |               |      |
+     * |  |      parts    |  |   parts     map<str,list<str>> list |  |      parts    |  |   parts     map<str,list<str>> list  list
+     * \__/   \_________/ \__/ |       |  |                      | \__/   \_________/ \__/ |       |  |                       | |  |
+     *   |          |      |   |       |  |                      |   |          |      |   |       |  |                       | |  |
+     *   |          |      |   |       |  |                      |   |          |      |   |       |  |                       | |  |
+     *   |          |      |   \_______/  |                      |   |          |      |   \_______/  |                       | |  |
+     *   |          |      |       |      |                      |   |          |      |       |      |                       | |  |
+     *  protocol  domain  port  filepath  |                      |  protocol  domain  port  filepath  |                       | |  |
+     *  \_______________________________/ \______________________/ \_______________________________/  \_______________________/ \__/
+     *                 |                              |                            |                              |               |
+     *                raw                           params                        raw                           params          params
+     *               request                                                    request
+     * \_________________________________________________________/ \_______________________________/  \_______________________/ \__/
+     *                            |                                                |                               |              |
+     *                          public                                           private                       private         private
+     * everything is a query (the js strat everthing is a function :)
+     *
+     * private delimiters = #! #? #
+     * the #? delimiter is not a indicator for params or map
+     *
+     * params delimiter = ?
+     * option/entry<key, value> delimiter = &
+     * protocol delimiters = :// :
+     *
+     * Escaping is not visible in ascii but keys, values and options get unescaped
+     * The format not forcing a protocol domain or a port and can even none of them given and still is a valid url/path
+     * Their is no valid check for domains (this can be done with iana site and the url navigator)
+     * This helper only throws in some cases a UnsupportedEncodingException if is right programmed this never get thrown
+     */
     public static final String FILE_PATH_DELIMITER = "/";
     public static final String DOMAIN_DELIMITER = ".";
 
@@ -26,8 +66,8 @@ public class UrlParsingHelper {
      * @param String encoding
      * @return UrlNavigator
      */
-    public static UrlNavigator parse(String url, boolean removeEmptyQuery, boolean removeEmptyPart, boolean privateFilepathSupport, String encoding) throws UnsupportedEncodingException {
-        return new UrlNavigator(getQueriesFromUrl(url, removeEmptyQuery, removeEmptyPart, privateFilepathSupport, encoding));
+    public static UrlNavigator parse(String url, String encoding, UrlParsingFeature... features) throws UnsupportedEncodingException {
+        return new UrlNavigator(getQueriesFromUrl(url, encoding, features));
     }
 
     /*
@@ -52,12 +92,12 @@ public class UrlParsingHelper {
      * @param String encoding
      * @return List<UrlQuery>
      */
-    public static List<UrlQuery> getQueriesFromUrl(String url, boolean removeEmptyQuery, boolean removeEmptyPart, boolean privateFilepathSupport,String encoding) throws UnsupportedEncodingException {
+    public static List<UrlQuery> getQueriesFromUrl(String url, String encoding, UrlParsingFeature... features) throws UnsupportedEncodingException {
         List<UrlQuery> queries = new ArrayList<UrlQuery>();
 
         RawUrlRequest urlRequest = getRawRequestFromUrl(url);
         queries.addAll(getQueriesFromRawRequest(urlRequest));
-        queries.addAll(getQueriesFromRequestPath(urlRequest.getRequest(), removeEmptyQuery, removeEmptyPart, privateFilepathSupport, encoding));
+        queries.addAll(getQueriesFromRequestPath(urlRequest.getRequest(), encoding, features));
         return queries;
     }
 
@@ -65,39 +105,26 @@ public class UrlParsingHelper {
         List<UrlQuery> queries = new ArrayList<UrlQuery>();
 
         String protocol = urlRequest.getProtocol();
-        if (urlRequest.getPort() != null) {
+        String strPort = urlRequest.getPort();
+        Integer port = null;
+        if (strPort != null) {
             try {
-                Integer port = Integer.parseInt(urlRequest.getPort());
-                queries.add(UrlProtocolTyp.selectProtocolByName(protocol, port));
+                port = Integer.parseInt(strPort);
             } catch (NumberFormatException ex) {
-                queries.add(UrlProtocolTyp.selectProtocolByName(protocol));
+                // TODO better error handling
             }
-        } else {
+        }
+
+        boolean gotProtocol = protocol != null;
+        boolean gotPort = port != null;
+
+        if (gotProtocol && gotPort) {
+            queries.add(UrlProtocolTyp.selectProtocolByName(protocol, port));
+        } else if (gotProtocol) {
             queries.add(UrlProtocolTyp.selectProtocolByName(protocol));
         }
 
         return queries;
-    }
-
-    /*
-     * getRawRequestFromUrl - a simple function that split the url into request and port if given as RawRequest
-     *
-     * @param String url
-     * @return RawUrlRequest
-     */
-    public static RawUrlRequest getPortAndDomainAsRawRequest(String url) {
-        // TODO better string splitting functions
-        String[] pathParts = url.split("/");
-        String domainAndPort = pathParts[0];
-
-        String[] portSplit = domainAndPort.split(":");
-        if (portSplit.length > 1) {
-            String port = portSplit[portSplit.length - 1];
-            url = domainAndPort.substring(0, port.length() - 1)+url.substring(domainAndPort.length());
-            return new RawUrlRequest(null, url, port);
-        }
-
-        return new RawUrlRequest(null,url,null);
     }
 
     /*
@@ -107,14 +134,40 @@ public class UrlParsingHelper {
      * @return RawUrlRequest
      */
     public static RawUrlRequest getRawRequestFromUrl(String url) {
-        String[] requestSplit = url.split(":\\/\\/");
+        String protocol = null;
+        String port = null;
+        String domain = null;
+        String request = null;
+
+        String urlWithoutProtocol = url;
+        String[] requestSplit = url.split("(:\\/\\/|:)");
         if (requestSplit.length > 1) {
-            String protocol = requestSplit[0];
-            RawUrlRequest portAndDomain = getPortAndDomainAsRawRequest(url);
-            return new RawUrlRequest(protocol, portAndDomain.getRequest(), portAndDomain.getPort());
+            protocol = requestSplit[0];
+            urlWithoutProtocol = url.substring(protocol.length());
         }
-        RawUrlRequest portAndDomain = getPortAndDomainAsRawRequest(url);
-        return new RawUrlRequest(null,portAndDomain.getRequest(), portAndDomain.getPort());
+
+        // TODO better string splitting functions
+        String[] pathParts = urlWithoutProtocol.split("/");
+        String domainAndPort = pathParts[0];
+        String[] portSplit = domainAndPort.split(":");
+
+        boolean portOrientated = portSplit.length > 1;
+        boolean pathOrientated = pathParts.length > 1;
+
+        if (portOrientated || pathOrientated) {
+            request = urlWithoutProtocol.substring(domainAndPort.length());
+
+            if (portOrientated) {
+                port = portSplit[portSplit.length - 1];
+                domain = domainAndPort.substring(0, port.length() - 1);
+            } else if (pathOrientated) {
+                domain = domainAndPort;
+            }
+        } else {
+            request = urlWithoutProtocol;
+        }
+
+        return new RawUrlRequest(protocol, domain, port, request);
     }
 
     /*
@@ -129,19 +182,33 @@ public class UrlParsingHelper {
         List<String> parts = new ArrayList<String>();
         List<String> privateParts = new ArrayList<String>();
 
-        boolean isfirstQuery = true;
+        boolean isFirstQuery = true;
         String firstQuery = null;
-        for (String part:request.split("(\\#\\!|\\#)")) {
+        for (String part:request.split("(\\#\\?|\\#\\!|\\#)")) {
             if (part.isEmpty() && removeEmpty) {
                 continue;
             }
-            if (isfirstQuery) {
+            if (isFirstQuery) {
                 firstQuery = part;
+                isFirstQuery = false;
                 continue;
             }
             privateParts.add(part);
         }
 
+        return new UrlRawQuery[]{
+                getRawQueryFromFirstQuery(firstQuery, removeEmpty),
+                new UrlRawQuery<List<String>>(parts, UrlRawQuery.UrlRawQueryState.PUBLIC),
+                new UrlRawQuery<List<String>>(parts, UrlRawQuery.UrlRawQueryState.PRIVATE)
+        };
+    }
+
+    public static UrlRawQuery getRawQueryFromFirstQuery(String firstQuery, boolean removeEmpty) {
+        if (firstQuery == null) {
+            return new UrlRawQuery<String>("");
+        }
+
+        List<String> parts = new ArrayList<String>();
         if (firstQuery != null) {
             for (String part : firstQuery.split("\\?")) {
                 if (part.trim().isEmpty() && removeEmpty) {
@@ -150,12 +217,7 @@ public class UrlParsingHelper {
                 parts.add(part);
             }
         }
-
-        return new UrlRawQuery[]{
-                new UrlRawQuery<String>(firstQuery != null ? firstQuery : ""),
-                new UrlRawQuery<List<String>>(parts, UrlRawQuery.UrlRawQueryState.PUBLIC),
-                new UrlRawQuery<List<String>>(parts, UrlRawQuery.UrlRawQueryState.PRIVATE)
-        };
+        return new UrlRawQuery<String>(firstQuery);
     }
 
     /*
@@ -167,21 +229,26 @@ public class UrlParsingHelper {
      * @param String encoding
      * @return List<UrlQuery>
      */
-    public static List<UrlQuery> getQueriesFromRequestPath(String requestPath, boolean removeEmptyQuery, boolean removeEmptyPart, boolean privateFilepathSupport,String encoding) throws UnsupportedEncodingException {
+    public static List<UrlQuery> getQueriesFromRequestPath(String requestPath, String encoding, UrlParsingFeature... features) throws UnsupportedEncodingException {
+        Features<UrlParsingFeature> check = new Features<UrlParsingFeature>(features);
         List<UrlQuery> queries = new ArrayList<UrlQuery>();
 
-        UrlRawQuery[] rawQuerys = getRawQueriesFromRequest(requestPath, removeEmptyQuery);
+        UrlRawQuery[] rawQuerys = getRawQueriesFromRequest(requestPath, check.got(UrlParsingFeature.REMOVE_EMPTY_QUERY));
         for (UrlRawQuery rawQuery:rawQuerys) {
             if (rawQuery.getValue() instanceof String) {
-                queries.addAll(getQueriesFromDomainFilePath((String) rawQuery.getValue(), removeEmptyPart, false, encoding));
+                queries.addAll(getQueriesFromDomainFilePath((String) rawQuery.getValue(), check.got(UrlParsingFeature.REMOVE_EMPTY_DOMAIN_PART), false, encoding));
             } else if (rawQuery.getValue() instanceof List) {
                 if (rawQuery.getState() == UrlRawQuery.UrlRawQueryState.PRIVATE) {
                     // PrivateQueryList
                     for (String strPrivateQuery:(List<String>) rawQuery.getValue()) {
-                        if (privateFilepathSupport) {
-                            boolean isFilePath = strPrivateQuery.startsWith(FILE_PATH_DELIMITER) || strPrivateQuery.endsWith(FILE_PATH_DELIMITER);
-                            if (isFilePath && strPrivateQuery.split(FILE_PATH_DELIMITER).length > 1) {
-                                queries.addAll(getQueriesFromDomainFilePath((String) rawQuery.getValue(), removeEmptyPart, true, encoding));
+                        if (check.got(UrlParsingFeature.PRIVATE_URL_SUPPORT)) {
+                            RawUrlRequest request = getRawRequestFromUrl((String) rawQuery.getValue());
+                            queries.addAll(getQueriesFromRawRequest(request));
+
+                            String strRequest = request.getRequest();
+                            if (strRequest != null) {
+                                strPrivateQuery = strRequest;
+                            } else {
                                 continue;
                             }
                         }
@@ -230,12 +297,12 @@ public class UrlParsingHelper {
      * @param String encoding
      * @return UrlParamsQuery
      */
-    public static UrlParamsQuery getUrlParamsQueryFromRawQuery(String rawString, String encoding) throws UnsupportedEncodingException {
+    public static UrlParamsQuery getUrlParamsQueryFromRawQuery(String rawQuery, String encoding) throws UnsupportedEncodingException {
         UrlParamsQuery query = new UrlParamsQuery();
 
-        String[] keyValues = rawString.split("&");
+        String[] keyValues = rawQuery.split("&");
         if (keyValues.length == 1) {
-            query.add(URLDecoder.decode(rawString, encoding));
+            query.add(URLDecoder.decode(rawQuery, encoding));
             return query;
         }
 

@@ -1,29 +1,30 @@
 package org.schabi.newpipe.extractor.url.model.request;
 
-import javax.annotation.Nullable;
-
 public class RawUrlRequest {
     private String protocol;
     private String request;
     private String port;
+    private String filepath;
 
-    public RawUrlRequest(String protocol, String request, String port) {
+    public RawUrlRequest(String protocol, String filepath, String port, String request) {
         this.protocol = protocol;
         this.request = request;
         this.port = port;
+        this.filepath = filepath;
     }
 
-    @Nullable
+    public String getFilepath() {
+        return filepath;
+    }
+
     public String getPort() {
         return port;
     }
 
-    @Nullable
     public String getProtocol() {
         return protocol;
     }
 
-    @Nullable
     public String getRequest() {
         return request;
     }
