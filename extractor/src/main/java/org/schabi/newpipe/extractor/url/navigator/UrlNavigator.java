@@ -9,7 +9,8 @@ import org.schabi.newpipe.extractor.url.model.list.filepath.UrlFilepathPublic;
 import org.schabi.newpipe.extractor.url.model.params.UrlParamsQueryInterface;
 import org.schabi.newpipe.extractor.url.model.params.UrlPrivateParamsQuery;
 import org.schabi.newpipe.extractor.url.model.params.UrlPublicParamsQuery;
-import org.schabi.newpipe.extractor.url.model.protocol.UrlProtocolTyp;
+import org.schabi.newpipe.extractor.url.model.protocol.model.UrlProtocol;
+import org.schabi.newpipe.extractor.url.model.protocol.wellknown.WellKnownProtocolHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class UrlNavigator {
 
     public UrlNavigator(List<UrlQuery> queries) {
         for (UrlQuery query:queries) {
-            if (query instanceof UrlProtocolTyp) {
+            if (query instanceof WellKnownProtocolHelper) {
                 protocols.add(query);
             } else if (query instanceof UrlDomainPrivate) {
                 privateDomains.add(query);
@@ -110,15 +111,15 @@ public class UrlNavigator {
     }
 
     public boolean gotProtocol(String protocolName) {
-        UrlProtocolTyp requiredProtocol = UrlProtocolTyp.selectProtocolByName(protocolName);
+        UrlProtocol requiredProtocol = WellKnownProtocolHelper.selectProtocolByName(protocolName);
         return gotProtocol(requiredProtocol);
     }
 
-    public boolean gotProtocol(UrlProtocolTyp requiredProtocol) {
+    public boolean gotProtocol(UrlProtocol requiredProtocol) {
         for (UrlQuery queryProtocol:protocols) {
-            UrlProtocolTyp protocol = (UrlProtocolTyp) queryProtocol;
-            if (protocol == requiredProtocol) {
-                if (protocol == UrlProtocolTyp.UNKNOWN) {
+            WellKnownProtocolHelper protocol = (WellKnownProtocolHelper) queryProtocol;
+            if (protocol.getProtocol().getClass().isInstance(requiredProtocol)) {
+                if (protocol == WellKnownProtocolHelper.UNKNOWN) {
                     if (protocol.getName().equalsIgnoreCase(requiredProtocol.getName())) {
                         return true;
                     }
@@ -130,10 +131,10 @@ public class UrlNavigator {
         return false;
     }
 
-    public List<UrlProtocolTyp> getProtocols() {
-        List<UrlProtocolTyp> protocolTyps = new ArrayList<UrlProtocolTyp>();
+    public List<WellKnownProtocolHelper> getProtocols() {
+        List<WellKnownProtocolHelper> protocolTyps = new ArrayList<WellKnownProtocolHelper>();
         for (UrlQuery protocol:protocols) {
-            protocolTyps.add((UrlProtocolTyp) protocol);
+            protocolTyps.add((WellKnownProtocolHelper) protocol);
         }
         return protocolTyps;
     }

@@ -8,7 +8,7 @@ import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
 import org.schabi.newpipe.extractor.url.model.UrlQuery;
 import org.schabi.newpipe.extractor.url.model.list.UrlPseudoQueryList;
 import org.schabi.newpipe.extractor.url.model.list.filepath.UrlFilepathPrivate;
-import org.schabi.newpipe.extractor.url.model.protocol.UrlProtocolTyp;
+import org.schabi.newpipe.extractor.url.model.protocol.wellknown.WellKnownProtocolHelper;
 import org.schabi.newpipe.extractor.url.navigator.UrlNavigator;
 
 import java.io.UnsupportedEncodingException;
@@ -139,7 +139,7 @@ public class DTubeUrlIdHandler implements UrlIdHandler {
                     Encodings.UTF_8,
                     UrlParsingFeature.values()
             );
-            boolean noWrongProtocol = navi.gotProtocol(UrlProtocolTyp.HTTP) || navi.gotProtocol(UrlProtocolTyp.HTTPS);
+            boolean noWrongProtocol = navi.gotProtocol(WellKnownProtocolHelper.HTTP.getProtocol()) || navi.gotProtocol(WellKnownProtocolHelper.HTTPS.getProtocol());
             if (noWrongProtocol && navi.gotDomain("d.tube")) {
                 for (UrlQuery queryPath:navi.getPrivateFilepaths()) {
                     UrlFilepathPrivate<String> filepath = (UrlFilepathPrivate<String>) queryPath;

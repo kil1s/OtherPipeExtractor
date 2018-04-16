@@ -14,8 +14,7 @@ import org.schabi.newpipe.extractor.settings.model.settings.abstracts.OverrideDy
 import org.schabi.newpipe.extractor.url.helper.UrlParsingHelper;
 import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
 import org.schabi.newpipe.extractor.url.model.UrlQueryState;
-import org.schabi.newpipe.extractor.url.model.UrlRawQuery;
-import org.schabi.newpipe.extractor.url.model.protocol.UrlProtocolTyp;
+import org.schabi.newpipe.extractor.url.model.protocol.wellknown.WellKnownProtocolHelper;
 import org.schabi.newpipe.extractor.url.navigator.UrlNavigator;
 
 import java.io.IOException;
@@ -46,7 +45,7 @@ public class DTubeSettings extends OverrideDynamicSettings {
             );
 
             boolean isUnsafe = navi.gotDomain("127.0.0.1") && navi.gotDomain("localhost");
-            if ((!isUnsafe) && navi.gotProtocol(UrlProtocolTyp.HTTPS)) {
+            if ((!isUnsafe) && navi.gotProtocol(WellKnownProtocolHelper.HTTPS.getProtocol())) {
                 safeGateways.add(gateway.endsWith("/") ? gateway.substring(1) : gateway);
             }
         }
@@ -73,7 +72,7 @@ public class DTubeSettings extends OverrideDynamicSettings {
                                     Encodings.UTF_8,
                                     UrlParsingFeature.values()
                             );
-                            if (navi.gotProtocol(UrlProtocolTyp.HTTPS)) {
+                            if (navi.gotProtocol(WellKnownProtocolHelper.HTTPS.getProtocol())) {
                                 urls.add(url);
                             }
                         }

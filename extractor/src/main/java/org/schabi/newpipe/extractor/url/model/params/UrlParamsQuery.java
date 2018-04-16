@@ -5,15 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 
 public class UrlParamsQuery extends HashMap<String, List<String>> implements UrlParamsQueryInterface {
-    private enum GOT {
+    protected enum GOT {
         NOT_EXIST,
         OPTION,
         KEY_VALUE
     }
 
-    private List<String> options = new ArrayList<String>();
+    protected List<String> options = new ArrayList<String>();
 
-    private GOT gotTyp(String key) {
+    protected GOT gotTyp(String key) {
         if (this.containsKey(key)) {
             return GOT.KEY_VALUE;
         }
@@ -89,6 +89,11 @@ public class UrlParamsQuery extends HashMap<String, List<String>> implements Url
         }
 
         return allValues;
+    }
+
+    @Override
+    public int size() {
+        return super.size()+this.options.size();
     }
 
     @Override
