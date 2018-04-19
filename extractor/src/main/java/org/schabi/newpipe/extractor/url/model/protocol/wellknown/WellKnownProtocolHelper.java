@@ -47,8 +47,8 @@ public enum WellKnownProtocolHelper implements UrlQuery {
 
         String unknownReadableName = WellKnownProtocolHelper.UNKNOWN.getReadableName();
         if (port != null) {
-            return new UrlUnknownProtocol(name, unknownReadableName, UrlQueryState.OTHER, port);
+            return new UrlUnknownProtocol(name.toUpperCase(), unknownReadableName, UrlQueryState.OTHER, port);
         }
-        return new UrlUnknownProtocol(name, unknownReadableName, UrlQueryState.OTHER);
+        return new UrlUnknownProtocol(name.toUpperCase(), unknownReadableName, UrlQueryState.OTHER);
     }
 }

@@ -151,13 +151,13 @@ public class UrlParsingHelper {
         boolean gotProtocol = protocol != null;
         boolean gotPort = port != null;
 
+        UrlProtocol resultedProtocol = WellKnownProtocolHelper.UNKNOWN.getProtocol();
         if (gotProtocol && gotPort) {
-            return WellKnownProtocolHelper.selectProtocolByName(protocol, port);
+            resultedProtocol = WellKnownProtocolHelper.selectProtocolByName(protocol, port);
         } else if (gotProtocol) {
-            return WellKnownProtocolHelper.selectProtocolByName(protocol);
+            resultedProtocol = WellKnownProtocolHelper.selectProtocolByName(protocol);
         }
 
-        UrlProtocol resultedProtocol = WellKnownProtocolHelper.UNKNOWN.getProtocol();
         switch (state) {
             case PRIVATE:
                 return resultedProtocol.clonePrivate();

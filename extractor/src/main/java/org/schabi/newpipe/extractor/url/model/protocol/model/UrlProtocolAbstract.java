@@ -2,6 +2,8 @@ package org.schabi.newpipe.extractor.url.model.protocol.model;
 
 import org.schabi.newpipe.extractor.url.model.UrlQueryState;
 
+import java.util.Objects;
+
 public abstract class UrlProtocolAbstract implements UrlProtocol {
     protected String name;
     protected String readableName;
@@ -57,4 +59,30 @@ public abstract class UrlProtocolAbstract implements UrlProtocol {
 
     @Override
     public abstract UrlProtocol clonePublic();
+
+    @Override
+    public String toString() {
+        return "UrlProtocol {" +
+                "name='" + name + '\'' +
+                ", readableName='" + readableName + '\'' +
+                ", port=" + port +
+                ", state=" + state +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UrlProtocolAbstract that = (UrlProtocolAbstract) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(readableName, that.readableName) &&
+                Objects.equals(port, that.port) &&
+                state == that.state;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, readableName, port, state);
+    }
 }
