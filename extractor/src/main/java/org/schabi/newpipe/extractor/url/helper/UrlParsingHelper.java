@@ -300,18 +300,42 @@ public class UrlParsingHelper {
                         if (check.got(UrlParsingFeature.PRIVATE_URL_SUPPORT)) {
                             RawUrlRequest request = getRawRequestFromUrl(strPrivateQuery);
                             String strFilepath = request.getFilepath();
+                            String[] filepathQuerys = strFilepath.split("\\?");
+                            if (filepathQuerys.length > 1) {
+                                strFilepath = filepathQuerys[0];
+                            }
 
                             boolean gotFilepath = strFilepath != null;
-                            if (!(gotFilepath && strFilepath.equals(strPrivateQuery))) {
+                            List<String> filepathParts = getPartsFromPath(
+                                    strFilepath,
+                                    check.got(UrlParsingFeature.REMOVE_EMPTY_PATH_PART),
+                                    encoding,
+                                    FILE_PATH_DELIMITER
+                            );
+                            boolean isValidFilepath = filepathParts.size() > 1;
+
+                            if (!(gotFilepath &&
+                                  strFilepath.equals(strPrivateQuery) &&
+                                  (!isValidFilepath)
+                                )) {
+
                                 queries.addAll(getQueriesFromRawRequest(request, encoding, check.got(UrlParsingFeature.REMOVE_EMPTY_PATH_PART), UrlQueryState.PRIVATE));
                                 if (gotFilepath) {
-                                    strPrivateQuery = strFilepath;
+                                    if (isValidFilepath) {
+                                        queries.add(((UrlQueryList) filepathParts).toPrivateFilepath());
+                                        strPrivateQuery = request.getFilepath().substring(strFilepath.length());
+                                    } else {
+                                        strPrivateQuery = strFilepath;
+                                    }
                                 } else {
                                     continue;
                                 }
                             }
                         }
 
+                        if (strPrivateQuery.trim().isEmpty()) {
+                            continue;
+                        }
                         UrlPrivateParamsQuery paramsQuery = getUrlParamsQueryFromRawQuery(strPrivateQuery, encoding).toPrivate();
                         if (paramsQuery.size() > 0) {
                             queries.add(paramsQuery);

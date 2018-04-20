@@ -5,7 +5,7 @@ import org.schabi.newpipe.extractor.url.model.UrlQuery;
 import java.util.*;
 
 public abstract class UrlPseudoQueryList<T> implements UrlQuery, List<T> {
-    private UrlQueryList<T> queryList;
+    protected UrlQueryList<T> queryList;
 
     public UrlPseudoQueryList(UrlQueryList<T> queryList) {
         this.queryList = queryList;
@@ -124,5 +124,15 @@ public abstract class UrlPseudoQueryList<T> implements UrlQuery, List<T> {
     @Override
     public List<T> subList(int i, int i1) {
         return this.queryList.subList(i, i1);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return queryList.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return queryList.hashCode();
     }
 }

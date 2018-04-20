@@ -1,8 +1,6 @@
 package org.schabi.newpipe.extractor.url.model.params;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class UrlParamsQuery extends HashMap<String, List<String>> implements UrlParamsQueryInterface {
     protected enum GOT {
@@ -12,6 +10,75 @@ public class UrlParamsQuery extends HashMap<String, List<String>> implements Url
     }
 
     protected List<String> options = new ArrayList<String>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        boolean pseudo = o instanceof UrlPseudoParamsQuery;
+        if (o == null || (getClass() != o.getClass() && (!(pseudo)))) {
+            return false;
+        }
+        if (!super.equals(o)) return false;
+        UrlParamsQuery that = pseudo ? ((UrlPseudoParamsQuery) o).query : (UrlParamsQuery) o;
+
+        Set<Map.Entry<String, List<String>>> thatEntrySet = that.entrySet();
+        Set<Map.Entry<String, List<String>>> entrySet = entrySet();
+        if (entrySet.size() != thatEntrySet.size()) {
+            return false;
+        }
+
+
+        Iterator<Map.Entry<String, List<String>>> thatEntryIterator = thatEntrySet.iterator();
+        Iterator<Map.Entry<String, List<String>>> entryIterator = entrySet.iterator();
+
+        while (thatEntryIterator.hasNext() && entryIterator.hasNext()) {
+            Map.Entry<String, List<String>> thatEntry = thatEntryIterator.next();
+            Map.Entry<String, List<String>> entry = entryIterator.next();
+
+            if (!(thatEntry.getKey().equals(entry.getKey()))) {
+                return false;
+            }
+
+            if (!(thatEntry.getValue().equals(entry.getValue()))) {
+                return false;
+            }
+        }
+
+        List<String> thatOptions = that.options;
+        if (thatOptions.size() != options.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < options.size(); i++) {
+            String thatOption = options.get(i);
+            String option = options.get(i);
+            if (!option.equals(thatOption)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "UrlParamsQuery{" +
+                "options=" + options.toString() +
+                "map=" + mapToString() +
+                '}';
+    }
+
+    protected String mapToString() {
+        StringBuilder map = new StringBuilder();
+        for (Map.Entry<String, List<String>> entry:super.entrySet()) {
+            map.append('{').append(entry.getKey()).append('[');
+            for (String option:entry.getValue()) {
+                map.append(option).append(", ");
+            }
+            map.append("]}, ");
+        }
+        return map.toString();
+    }
 
     protected GOT gotTyp(String key) {
         if (this.containsKey(key)) {

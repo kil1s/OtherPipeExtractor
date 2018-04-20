@@ -1,9 +1,6 @@
 package org.schabi.newpipe.extractor.url.model.params;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class UrlPseudoParamsQuery implements UrlParamsQueryInterface, Map<String, List<String>> {
     protected UrlParamsQuery query;
@@ -90,6 +87,23 @@ public abstract class UrlPseudoParamsQuery implements UrlParamsQueryInterface, M
     @Override
     public void putAll(Map<? extends String, ? extends List<String>> map) {
         query.putAll(map);
+    }
+
+    @Override
+    public String toString() {
+        return "UrlPseudoParamsQuery{" +
+                "query=" + query +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return query.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return query.hashCode();
     }
 
     @Override
