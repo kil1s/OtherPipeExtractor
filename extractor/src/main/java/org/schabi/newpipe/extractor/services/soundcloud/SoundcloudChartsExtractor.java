@@ -1,6 +1,6 @@
 package org.schabi.newpipe.extractor.services.soundcloud;
 
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.UrlIdHandler;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
@@ -26,7 +26,7 @@ public class SoundcloudChartsExtractor extends KioskExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull Downloader downloader) {
+    public void onFetchPage(@Nonnull HttpDownloader downloader) {
     }
 
     @Nonnull

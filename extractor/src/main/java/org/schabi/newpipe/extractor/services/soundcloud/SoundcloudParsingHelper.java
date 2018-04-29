@@ -7,7 +7,7 @@ import com.grack.nanojson.JsonParserException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.channel.ChannelInfoItemsCollector;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
@@ -35,7 +35,7 @@ public class SoundcloudParsingHelper {
     public static String clientId() throws ReCaptchaException, IOException, RegexException {
         if (clientId != null && !clientId.isEmpty()) return clientId;
 
-        Downloader dl = NewPipe.getDownloader();
+        HttpDownloader dl = NewPipe.getDownloader();
         String response = dl.download("https://soundcloud.com");
 
         Document doc = Jsoup.parse(response);
@@ -79,7 +79,7 @@ public class SoundcloudParsingHelper {
      * 
      * See https://developers.soundcloud.com/docs/api/reference#resolve
      */
-    public static JsonObject resolveFor(Downloader downloader, String url) throws IOException, ReCaptchaException, ParsingException {
+    public static JsonObject resolveFor(HttpDownloader downloader, String url) throws IOException, ReCaptchaException, ParsingException {
         String apiUrl = "https://api.soundcloud.com/resolve"
                 + "?url=" + URLEncoder.encode(url, "UTF-8")
                 + "&client_id=" + clientId();

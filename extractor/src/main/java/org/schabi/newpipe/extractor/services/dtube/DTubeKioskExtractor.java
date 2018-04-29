@@ -1,6 +1,6 @@
 package org.schabi.newpipe.extractor.services.dtube;
 
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.UrlIdHandler;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
@@ -26,7 +26,7 @@ public class DTubeKioskExtractor extends KioskExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException {
+    public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
         String url = getCleanUrl();
         kiosk = DTubeKiosk.getKioskById(getUrlIdHandler().getId(url));
         pageNavi = new DTubeStreamInfoItemNavigator(

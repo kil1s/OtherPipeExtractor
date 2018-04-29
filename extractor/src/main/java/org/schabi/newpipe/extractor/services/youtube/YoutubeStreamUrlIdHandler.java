@@ -3,7 +3,7 @@ package org.schabi.newpipe.extractor.services.youtube;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.UrlIdHandler;
 import org.schabi.newpipe.extractor.exceptions.FoundAdException;
@@ -134,7 +134,7 @@ public class YoutubeStreamUrlIdHandler implements UrlIdHandler {
             throw new ParsingException("Invalid shared link", e);
         }
         String sharedId = getSharedId(uri);
-        Downloader downloader = NewPipe.getDownloader();
+        HttpDownloader downloader = NewPipe.getDownloader();
         String content;
         try {
             content = downloader.download("https://www.youtube.com/shared?ci=" + sharedId);

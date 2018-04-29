@@ -4,7 +4,7 @@ import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
@@ -25,7 +25,7 @@ public class SoundcloudSearchEngine extends SearchEngine {
     public InfoItemsSearchCollector search(String query, int page, String languageCode, Filter filter) throws IOException, ExtractionException {
         InfoItemsSearchCollector collector = getInfoItemSearchCollector();
 
-        Downloader dl = NewPipe.getDownloader();
+        HttpDownloader dl = NewPipe.getDownloader();
 
         String url = "https://api-v2.soundcloud.com/search";
 

@@ -4,18 +4,18 @@ import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.constants.Encodings;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
-import org.schabi.newpipe.extractor.settings.exceptions.WrongSettingsDataException;
-import org.schabi.newpipe.extractor.settings.model.provider.StringListProvider;
-import org.schabi.newpipe.extractor.settings.model.settings.abstracts.OverrideDynamicSettings;
-import org.schabi.newpipe.extractor.url.helper.UrlParsingHelper;
-import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
-import org.schabi.newpipe.extractor.url.model.UrlQueryState;
-import org.schabi.newpipe.extractor.url.model.protocol.wellknown.WellKnownProtocolHelper;
-import org.schabi.newpipe.extractor.url.navigator.UrlNavigator;
+import org.schabi.newpipe.settings.exceptions.WrongSettingsDataException;
+import org.schabi.newpipe.settings.model.provider.StringListProvider;
+import org.schabi.newpipe.settings.model.settings.abstracts.OverrideDynamicSettings;
+import org.schabi.newpipe.url.helper.UrlParsingHelper;
+import org.schabi.newpipe.url.model.UrlParsingFeature;
+import org.schabi.newpipe.url.model.UrlQueryState;
+import org.schabi.newpipe.url.model.protocol.wellknown.WellKnownProtocolHelper;
+import org.schabi.newpipe.url.navigator.UrlNavigator;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -54,7 +54,7 @@ public class DTubeSettings extends OverrideDynamicSettings {
 
     @Override
     public void refresh() throws IOException, ReCaptchaException {
-        Downloader dl = NewPipe.getDownloader();
+        HttpDownloader dl = NewPipe.getDownloader();
         String settings = dl.download(DTubeParsingHelper.DIRECT_FILES_ENDPOINT +"/settings.json");
         try {
             JsonObject jsonSettings = JsonParser.object().from(settings);

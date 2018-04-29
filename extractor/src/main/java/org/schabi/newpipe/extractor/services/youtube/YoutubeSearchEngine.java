@@ -3,7 +3,7 @@ package org.schabi.newpipe.extractor.services.youtube;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.search.InfoItemsSearchCollector;
@@ -46,7 +46,7 @@ public class YoutubeSearchEngine extends SearchEngine {
     public InfoItemsSearchCollector search(String query, int page, String languageCode, Filter filter)
             throws IOException, ExtractionException {
         InfoItemsSearchCollector collector = getInfoItemSearchCollector();
-        Downloader downloader = NewPipe.getDownloader();
+        HttpDownloader downloader = NewPipe.getDownloader();
 
         String url = "https://www.youtube.com/results"
                 + "?q=" + URLEncoder.encode(query, CHARSET_UTF_8)

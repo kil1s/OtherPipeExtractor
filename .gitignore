@@ -4,6 +4,7 @@ build/
 local.properties
 out/
 *.iml
+extractor/src/main/java/org/schabi/newpipe/extractor/services/mediaccc/*
 
 # Ignore Gradle GUI config
 gradle-app.setting

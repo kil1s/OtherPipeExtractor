@@ -4,7 +4,7 @@ import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.SuggestionExtractor;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
@@ -27,7 +27,7 @@ public class SoundcloudSuggestionExtractor extends SuggestionExtractor {
     public List<String> suggestionList(String query, String contentCountry) throws IOException, ExtractionException {
         List<String> suggestions = new ArrayList<>();
 
-        Downloader dl = NewPipe.getDownloader();
+        HttpDownloader dl = NewPipe.getDownloader();
 
         String url = "https://api-v2.soundcloud.com/search/queries"
                 + "?q=" + URLEncoder.encode(query, CHARSET_UTF_8)

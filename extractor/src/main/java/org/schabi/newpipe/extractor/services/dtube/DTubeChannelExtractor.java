@@ -3,7 +3,7 @@ package org.schabi.newpipe.extractor.services.dtube;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.channel.ChannelExtractor;
@@ -48,7 +48,7 @@ public class DTubeChannelExtractor extends ChannelExtractor {
 
     @Override
     public long getSubscriberCount() throws ParsingException {
-        Downloader dl = NewPipe.getDownloader();
+        HttpDownloader dl = NewPipe.getDownloader();
         byte[] request = DTubeParsingHelper.getSteemitRequest("call", new Object[]{"follow_api","get_follow_count",new Object[]{getName()}}).getBytes();
 
         try {
@@ -86,7 +86,7 @@ public class DTubeChannelExtractor extends ChannelExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException {
+    public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
         DTubeParsingHelper.DTubeResultAndMeta resultAndMeta = DTubeParsingHelper.getResultAndMetaFromSteemitContent(downloader, Words.PROFILE, new Object[]{"database_api","get_accounts", new Object[]{new Object[]{getName()}}});
         meta = resultAndMeta.getMeta();
         result = resultAndMeta.getResult();

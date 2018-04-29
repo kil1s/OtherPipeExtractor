@@ -1,6 +1,6 @@
 package org.schabi.newpipe.extractor.utils;
 
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.MediaFormat;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
@@ -62,7 +62,7 @@ public class DashMpdParser {
      */
     public static void getStreams(StreamInfo streamInfo) throws DashMpdParsingException, ReCaptchaException {
         String dashDoc;
-        Downloader downloader = NewPipe.getDownloader();
+        HttpDownloader downloader = NewPipe.getDownloader();
         try {
             dashDoc = downloader.download(streamInfo.getDashMpdUrl());
         } catch (IOException ioe) {
