@@ -141,8 +141,8 @@ public class DTubeUrlIdHandler implements UrlIdHandler {
             );
             boolean noWrongProtocol = navi.gotProtocol(WellKnownProtocolHelper.HTTP.getProtocol()) || navi.gotProtocol(WellKnownProtocolHelper.HTTPS.getProtocol());
             if (noWrongProtocol && navi.gotDomain("d.tube")) {
-                for (UrlQuery queryPath:navi.getPrivateFilepaths()) {
-                    UrlFilepathPrivate<String> filepath = (UrlFilepathPrivate<String>) queryPath;
+                for (UrlQuery queryPath:navi.getFilepaths()) {
+                    UrlPseudoQueryList<String> filepath = (UrlPseudoQueryList<String>) queryPath;
                     int size = filepath.size();
                     if (size > 0) {
                         String indicator = filepath.get(0);
