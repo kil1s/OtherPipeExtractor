@@ -2,6 +2,7 @@ package org.schabi.newpipe.extractor;
 
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
+import org.schabi.newpipe.http.HttpDownloader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,7 +35,7 @@ public abstract class Extractor {
     @Nullable
     private String cleanUrl;
     private boolean pageFetched = false;
-    private final Downloader downloader;
+    private final HttpDownloader downloader;
 
     public Extractor(final StreamingService service, final String url) {
         if(service == null) throw new NullPointerException("service is null");
@@ -76,7 +77,7 @@ public abstract class Extractor {
      * @throws IOException if the page can not be loaded
      * @throws ExtractionException if the pages content is not understood
      */
-    public abstract void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException;
+    public abstract void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException;
 
     @Nonnull
     public abstract String getId() throws ParsingException;
