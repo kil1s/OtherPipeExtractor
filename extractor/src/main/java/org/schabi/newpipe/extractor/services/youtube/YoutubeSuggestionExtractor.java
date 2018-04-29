@@ -3,7 +3,7 @@ package org.schabi.newpipe.extractor.services.youtube;
 import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.SuggestionExtractor;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
@@ -44,7 +44,7 @@ public class YoutubeSuggestionExtractor extends SuggestionExtractor {
 
     @Override
     public List<String> suggestionList(String query, String contentCountry) throws IOException, ExtractionException {
-        Downloader dl = NewPipe.getDownloader();
+        HttpDownloader dl = NewPipe.getDownloader();
         List<String> suggestions = new ArrayList<>();
 
         String url = "https://suggestqueries.google.com/complete/search"

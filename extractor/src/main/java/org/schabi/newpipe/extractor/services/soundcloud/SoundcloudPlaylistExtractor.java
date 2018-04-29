@@ -3,7 +3,7 @@ package org.schabi.newpipe.extractor.services.soundcloud;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
@@ -29,7 +29,7 @@ public class SoundcloudPlaylistExtractor extends PlaylistExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException {
+    public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
 
         playlistId = getUrlIdHandler().getId(getOriginalUrl());
         String apiUrl = "https://api.soundcloud.com/playlists/" + playlistId +

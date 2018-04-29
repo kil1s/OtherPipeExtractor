@@ -6,7 +6,8 @@ import org.schabi.newpipe.extractor.constants.Keys;
 import org.schabi.newpipe.extractor.constants.Words;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
-import org.schabi.newpipe.extractor.settings.model.settings.interfaces.Settings;
+import org.schabi.newpipe.http.HttpDownloader;
+import org.schabi.newpipe.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.stream.*;
 
 import javax.annotation.Nonnull;
@@ -295,7 +296,7 @@ public class DTubeStreamExtractor extends StreamExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException {
+    public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
         DTubeParsingHelper.DTubeResultAndMeta resultAndMeta = DTubeParsingHelper.getResultAndMetaFromSteemitContent(downloader, Words.PROFILE, getId().split("/"));
         meta = resultAndMeta.getMeta();
         result = resultAndMeta.getResult();

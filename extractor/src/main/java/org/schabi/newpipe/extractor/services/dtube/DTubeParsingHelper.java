@@ -1,8 +1,7 @@
 package org.schabi.newpipe.extractor.services.dtube;
 
 import com.grack.nanojson.*;
-import org.schabi.newpipe.extractor.Downloader;
-import org.schabi.newpipe.extractor.InfoItemsCollector;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.constants.Encodings;
@@ -11,11 +10,8 @@ import org.schabi.newpipe.extractor.constants.Versions;
 import org.schabi.newpipe.extractor.constants.Words;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
-import org.schabi.newpipe.extractor.search.InfoItemsSearchCollector;
-import org.schabi.newpipe.extractor.settings.model.settings.interfaces.Settings;
-import org.schabi.newpipe.extractor.stream.StreamInfoItem;
+import org.schabi.newpipe.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.stream.StreamInfoItemExtractor;
-import org.schabi.newpipe.extractor.stream.StreamInfoItemsCollector;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -164,7 +160,7 @@ public class DTubeParsingHelper {
         throw new ParsingException("\""+ path +"\" got no key \""+ Words.SNAPHASH +"\"");
     }
 
-    public static DTubeResultAndMeta getResultAndMetaFromSteemitContent(Downloader downloader, String typeKey, Object[] params) throws ParsingException, UnsupportedEncodingException, IOException, ReCaptchaException {
+    public static DTubeResultAndMeta getResultAndMetaFromSteemitContent(HttpDownloader downloader, String typeKey, Object[] params) throws ParsingException, UnsupportedEncodingException, IOException, ReCaptchaException {
         JsonObject metaData;
         JsonObject resultData = null;
 
@@ -232,7 +228,7 @@ public class DTubeParsingHelper {
     public static List<StreamInfoItemExtractor> getAskSteemStreamExtractorsByUrl(String url, StreamingService service) throws ParsingException, IOException, ReCaptchaException {
         List<StreamInfoItemExtractor> extractors = new ArrayList<StreamInfoItemExtractor>();
 
-        Downloader dl = NewPipe.getDownloader();
+        HttpDownloader dl = NewPipe.getDownloader();
         String strContent = dl.download(url);
         try {
             JsonObject object = JsonParser.object().from(strContent);

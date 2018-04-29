@@ -3,7 +3,7 @@ package org.schabi.newpipe.extractor.services.dtube;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.extractor.Downloader;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.ListExtractor;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
@@ -14,10 +14,10 @@ import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.stream.StreamInfoItemsCollector;
-import org.schabi.newpipe.extractor.url.helper.UrlParsingHelper;
-import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
-import org.schabi.newpipe.extractor.url.model.UrlQuery;
-import org.schabi.newpipe.extractor.url.navigator.UrlNavigator;
+import org.schabi.newpipe.url.helper.UrlParsingHelper;
+import org.schabi.newpipe.url.model.UrlParsingFeature;
+import org.schabi.newpipe.url.model.UrlQuery;
+import org.schabi.newpipe.url.navigator.UrlNavigator;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -45,7 +45,7 @@ public class DTubeStreamInfoItemNavigator {
 
     protected StreamInfoItemsCollector getCollectorWithParams(Map<String, Object> addOptions) throws IOException, ExtractionException {
         StreamInfoItemsCollector collector = new StreamInfoItemsCollector(service.getServiceId());
-        Downloader downloader = NewPipe.getDownloader();
+        HttpDownloader downloader = NewPipe.getDownloader();
 
         JsonObject options = new JsonObject();
         options.put("tag", tag);

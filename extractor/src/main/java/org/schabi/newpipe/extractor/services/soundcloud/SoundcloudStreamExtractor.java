@@ -7,6 +7,7 @@ import org.schabi.newpipe.extractor.*;
 import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
+import org.schabi.newpipe.http.HttpDownloader;
 import org.schabi.newpipe.extractor.stream.*;
 
 import javax.annotation.Nonnull;
@@ -27,7 +28,7 @@ public class SoundcloudStreamExtractor extends StreamExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException {
+    public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
         track = SoundcloudParsingHelper.resolveFor(downloader, getOriginalUrl());
 
         String policy = track.getString("policy", "");
@@ -135,7 +136,7 @@ public class SoundcloudStreamExtractor extends StreamExtractor {
     @Override
     public List<AudioStream> getAudioStreams() throws IOException, ExtractionException {
         List<AudioStream> audioStreams = new ArrayList<>();
-        Downloader dl = NewPipe.getDownloader();
+        HttpDownloader dl = NewPipe.getDownloader();
 
         String apiUrl = "https://api.soundcloud.com/i1/tracks/" + urlEncode(getId()) + "/streams"
                 + "?client_id=" + urlEncode(SoundcloudParsingHelper.clientId());
