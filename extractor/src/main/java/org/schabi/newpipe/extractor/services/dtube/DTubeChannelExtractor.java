@@ -49,7 +49,7 @@ public class DTubeChannelExtractor extends ChannelExtractor {
     @Override
     public long getSubscriberCount() throws ParsingException {
         HttpDownloader dl = NewPipe.getDownloader();
-        byte[] request = DTubeParsingHelper.getSteemitRequest("call", new Object[]{"follow_api","get_follow_count",new Object[]{getName()}}).getBytes();
+        byte[] request = DTubeParsingHelper.getSteemitRequest("call", new Object[]{"follow_api","get_follow_count", new Object[]{getId()}}).getBytes();
 
         try {
             String response = dl.download(DTubeParsingHelper.STEEMIT_ENDPOINT, request);
@@ -87,13 +87,20 @@ public class DTubeChannelExtractor extends ChannelExtractor {
 
     @Override
     public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
-        DTubeParsingHelper.DTubeResultAndMeta resultAndMeta = DTubeParsingHelper.getResultAndMetaFromSteemitContent(downloader, Words.PROFILE, new Object[]{"database_api","get_accounts", new Object[]{new Object[]{getName()}}});
+        DTubeUrlIdHandler urlHandler = (DTubeUrlIdHandler) getUrlIdHandler();
+        Object[] params = urlHandler.getSteemitParams(getCleanUrl());
+        DTubeParsingHelper.DTubeResultAndMeta resultAndMeta = DTubeParsingHelper.getResultAndMetaFromSteemitContent(
+                downloader,
+                "call",
+                Words.PROFILE,
+                new Object[]{"database_api","get_accounts", params}
+        );
         meta = resultAndMeta.getMeta();
         result = resultAndMeta.getResult();
         pageNavi = new DTubeStreamInfoItemNavigator(
                 getCleanUrl(),
                 50,
-                getName(),
+                urlHandler.getAuthor(getCleanUrl()),
                 getService(),
                 new Object[]{"database_api", "get_discussions_by_blog"},
                 ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler())
@@ -103,13 +110,13 @@ public class DTubeChannelExtractor extends ChannelExtractor {
     @Nonnull
     @Override
     public String getId() throws ParsingException {
-        assertPageFetched();
-        return DTubeParsingHelper.getStringFromJson(Words.META, meta,"author").getData();
+        return ((DTubeUrlIdHandler) getUrlIdHandler()).getAuthor(getCleanUrl());
     }
 
     @Nonnull
     @Override
     public String getName() throws ParsingException {
-        return getId();
+        assertPageFetched();
+        return DTubeParsingHelper.getStringFromJson(Words.META, meta,"name").getData();
     }
 }

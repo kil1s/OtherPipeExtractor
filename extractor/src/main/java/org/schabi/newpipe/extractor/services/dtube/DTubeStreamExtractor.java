@@ -39,7 +39,7 @@ public class DTubeStreamExtractor extends StreamExtractor {
     public String getUploadDate() throws ParsingException {
         assertPageFetched();
         SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return newDateFormat.format(new Date(getTimeStamp()));
+        return newDateFormat.format(new Date(DTubeParsingHelper.getLongTimeJsonFromResult(result, Words.ACTIVE, DATE_FORMAT, DATE_FORMATTER)));
     }
 
     @Nonnull
@@ -53,7 +53,11 @@ public class DTubeStreamExtractor extends StreamExtractor {
     @Override
     public String getDescription() throws ParsingException {
         assertPageFetched();
-        return DTubeParsingHelper.getStringFromMetaInfo(meta, "description").getData();
+        return DTubeParsingHelper.getStringFromJson(
+                "meta.content",
+                DTubeParsingHelper.getContentObject(meta, null).getData(),
+                "description"
+        ).getData();
     }
 
     @Override
@@ -83,13 +87,14 @@ public class DTubeStreamExtractor extends StreamExtractor {
     @Override
     public long getTimeStamp() throws ParsingException {
         assertPageFetched();
-        return DTubeParsingHelper.getLongTimeJsonFromResult(result, Words.ACTIVE, DATE_FORMAT, DATE_FORMATTER);
+        return -1;
     }
 
     @Override
     public long getViewCount() throws ParsingException {
         assertPageFetched();
-        // NEED SUPPORT low priority on steemit https://github.com/steemit/condenser/issues/812
+        // Need Support low priority on steemit https://github.com/steemit/condenser/issues/812
+        // TODO check if we can parse this from the steemit frontend
         return -1;
     }
 
@@ -297,7 +302,12 @@ public class DTubeStreamExtractor extends StreamExtractor {
 
     @Override
     public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
-        DTubeParsingHelper.DTubeResultAndMeta resultAndMeta = DTubeParsingHelper.getResultAndMetaFromSteemitContent(downloader, Words.PROFILE, getId().split("/"));
+        DTubeUrlIdHandler urlHandler = (DTubeUrlIdHandler) getUrlIdHandler();
+        DTubeParsingHelper.DTubeResultAndMeta resultAndMeta = DTubeParsingHelper.getResultAndMetaFromSteemitContent(
+                downloader,
+                Words.VIDEO,
+                urlHandler.getSteemitParams(getCleanUrl())
+        );
         meta = resultAndMeta.getMeta();
         result = resultAndMeta.getResult();
     }

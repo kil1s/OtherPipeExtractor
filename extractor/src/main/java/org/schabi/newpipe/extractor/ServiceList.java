@@ -1,9 +1,12 @@
 package org.schabi.newpipe.extractor;
 
+import org.schabi.newpipe.extractor.services.dtube.DTubeService;
 import org.schabi.newpipe.extractor.services.soundcloud.SoundcloudService;
 import org.schabi.newpipe.extractor.services.youtube.YoutubeService;
+import org.schabi.newpipe.settings.model.settings.interfaces.Settings;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
@@ -18,11 +21,13 @@ public final class ServiceList {
 
     public static final YoutubeService YouTube;
     public static final SoundcloudService SoundCloud;
+    public static final DTubeService DTube;
 
     private static final List<StreamingService> SERVICES = unmodifiableList(asList(
             YouTube = new YoutubeService(0),
-            SoundCloud = new SoundcloudService(1)
-            // DailyMotion = new DailyMotionService(2);
+            SoundCloud = new SoundcloudService(1),
+            // DailyMotion = new DailyMotionService(2),
+            DTube = new DTubeService(3)
     ));
 
     /**

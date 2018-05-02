@@ -103,7 +103,7 @@ public class Downloader implements HttpDownloader {
         for (Map.Entry<String, String> pair: customProperties.entrySet()) {
             con.setRequestProperty(pair.getKey(), pair.getValue());
         }
-        return dl(con);
+        return dl(con, true);
     }
 
     /**
@@ -119,24 +119,28 @@ public class Downloader implements HttpDownloader {
     public String download(String siteUrl, Map<String, String> customProperties, byte[] body) throws IOException, ReCaptchaException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        setupConnection(con, "POST");
         for (Map.Entry<String, String> pair: customProperties.entrySet()) {
             con.setRequestProperty(pair.getKey(), pair.getValue());
         }
+        con.setDoOutput(true);
         OutputStream outputStream = con.getOutputStream();
         outputStream.write(body);
         outputStream.close();
-        return dl(con);
+        return dl(con, false);
     }
 
     /**
      * Common functionality between download(String url) and download(String url, String language)
      */
-    private static Object[] downloadConAndString(HttpsURLConnection con) throws IOException, ReCaptchaException {
+    private static Object[] downloadConAndString(HttpsURLConnection con, boolean setup) throws IOException, ReCaptchaException {
         StringBuilder response = new StringBuilder();
         BufferedReader in = null;
 
         try {
-            con = setupConnection(con, "GET");
+            if (setup) {
+                con = setupConnection(con, "GET");
+            }
 
             in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
@@ -148,7 +152,7 @@ public class Downloader implements HttpDownloader {
         } catch (UnknownHostException uhe) {//thrown when there's no internet connection
             throw new IOException("unknown host or no network", uhe);
             //Toast.makeText(getActivity(), uhe.getMessage(), Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
+        } catch (IOException e) {
             /*
              * HTTP 429 == Too Many Request
              * Receive from Youtube.com = ReCaptcha challenge request
@@ -184,8 +188,8 @@ public class Downloader implements HttpDownloader {
     /**
      * Common functionality between download(String url) and download(String url, String language)
      */
-    private static String dl(HttpsURLConnection con) throws IOException, ReCaptchaException {
-        return (String) downloadConAndString(con)[1];
+    private static String dl(HttpsURLConnection con, boolean setup) throws IOException, ReCaptchaException {
+        return (String) downloadConAndString(con, setup)[1];
     }
 
     private Map<String, List<String>> headRange(HttpsURLConnection con) throws IOException {
@@ -249,7 +253,7 @@ public class Downloader implements HttpDownloader {
                     case METHOD:
                         return headMethodic(con);
                     case FULL_BODY:
-                        con = (HttpsURLConnection) downloadConAndString(con)[0];
+                        con = (HttpsURLConnection) downloadConAndString(con, true)[0];
                         return con.getHeaderFields();
                 }
             } catch (IOException e) {
@@ -283,17 +287,19 @@ public class Downloader implements HttpDownloader {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         //HttpsURLConnection con = NetCipher.getHttpsURLConnection(url);
-        return dl(con);
+        return dl(con, true);
     }
 
     @Override
     public String download(String siteUrl, byte[] body) throws IOException, ReCaptchaException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        setupConnection(con, "POST");
+        con.setDoOutput(true);
         OutputStream outputStream = con.getOutputStream();
         outputStream.write(body);
         outputStream.close();
-        return dl(con);
+        return dl(con, false);
     }
 
     @Override

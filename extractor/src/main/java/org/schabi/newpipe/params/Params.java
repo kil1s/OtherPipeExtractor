@@ -9,7 +9,7 @@ import org.schabi.newpipe.params.model.BaseParams;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
 public class Params<K, O, V> extends BaseParams<K, O, V, List<ProtoEntry>> {
     protected List<UnitedEntry<ProtoEntry<O>, BaseEntry<K, V>>> listMap = new ArrayList<UnitedEntry<ProtoEntry<O>, BaseEntry<K, V>>>();
 
@@ -79,9 +79,9 @@ public class Params<K, O, V> extends BaseParams<K, O, V, List<ProtoEntry>> {
     @Override
     public List<ProtoEntry> getEntries() {
         List<ProtoEntry> entries = new ArrayList<ProtoEntry>();
-        for (:listMap) {
+        /*for (:listMap) {
 
-        }
+        }*
         return null;
     }
-}
+}*/

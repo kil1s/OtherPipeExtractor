@@ -21,6 +21,7 @@ import org.schabi.newpipe.url.navigator.UrlNavigator;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,36 +52,50 @@ public class DTubeStreamInfoItemNavigator {
         options.put("tag", tag);
         // without no output
         options.put("limit", limit);
-        if (params != null) {
+        if (addOptions != null) {
             for (Map.Entry<String, Object> entry:addOptions.entrySet()) {
                 options.put(entry.getKey(), entry.getValue());
             }
         }
 
         int len = params.length;
-        Object[] actualParams = new Object[len];
+        Object[] actualParams = new Object[len+1];
         for (int i = 0; i < len; i++) {
             actualParams[i] = params[i];
         }
-        actualParams[len] = options;
+        actualParams[len] = new Object[]{options};
 
         byte[] request = DTubeParsingHelper.getSteemitRequest("call", actualParams).getBytes();
         String response = downloader.download(DTubeParsingHelper.STEEMIT_ENDPOINT, request);
         try {
-            for (Object obj: JsonParser.object().from(response).getArray(Words.RESULT)) {
-                if (!(obj instanceof JsonObject)) {
-                    continue;
-                }
+            JsonObject jsonResponse = JsonParser.object().from(response);
+            if (jsonResponse.has(Words.RESULT)) {
+                for (Object obj : jsonResponse.getArray(Words.RESULT)) {
+                    if (!(obj instanceof JsonObject)) {
+                        continue;
+                    }
 
-                JsonObject json = (JsonObject) obj;
-                if (json.has(Keys.JSON_METADATA) && json.get(Keys.JSON_METADATA) instanceof JsonObject) {
-                    JsonObject meta = json.getObject(Keys.JSON_METADATA);
-                    if (meta.has(Words.VIDEO) && meta.get(Words.VIDEO) instanceof JsonObject) {
-                        if (meta.has(Words.INFO) && meta.get(Words.INFO) instanceof JsonObject) {
-                            collector.commit(new DTubeStreamInfoItemExtractor(service, meta.getObject(Words.VIDEO).getObject(Words.INFO), json));
+                    JsonObject json = (JsonObject) obj;
+                    if (json.has(Keys.JSON_METADATA) && (
+                        json.isString(Keys.JSON_METADATA) ||
+                        json.get(Keys.JSON_METADATA) instanceof JsonObject
+                        )) {
+                        JsonObject meta = json.isString(Keys.JSON_METADATA) ?
+                                JsonParser.object().from(json.getString(Keys.JSON_METADATA)) :
+                                json.getObject(Keys.JSON_METADATA);
+
+                        // currently only d.tube support
+                        if (meta.has("app")
+                            && meta.isString("app")
+                            && meta.getString("app").startsWith("dtube")
+                            && meta.has(Words.VIDEO)
+                            && meta.get(Words.VIDEO) instanceof JsonObject) {
+                            collector.commit(new DTubeStreamInfoItemExtractor(service, meta.getObject(Words.VIDEO), json));
                         }
                     }
                 }
+            } else {
+                throw new ParsingException("response \""+jsonResponse.toString()+"\" has no result");
             }
         } catch (JsonParserException ex) {
             throw new ParsingException(ex.getMessage(), ex.getCause());
@@ -89,16 +104,29 @@ public class DTubeStreamInfoItemNavigator {
         return collector;
     }
 
+    protected void ensureCurrentCollectorIsLoaded() throws IOException, ExtractionException {
+        if (currentCollector == null) {
+            currentCollector = getCollectorWithParams(null);
+        }
+    }
+
     public ListExtractor.InfoItemsPage<StreamInfoItem> getInitialPage() throws IOException, ExtractionException {
-        currentCollector = getCollectorWithParams(null);
+        ensureCurrentCollectorIsLoaded();
         return new ListExtractor.InfoItemsPage<StreamInfoItem>(currentCollector, getNextPageUrl());
     }
 
     public String getNextPageUrl() throws IOException, ExtractionException {
+        ensureCurrentCollectorIsLoaded();
         List<StreamInfoItem> items = currentCollector.getStreamInfoItemList();
-        StreamInfoItem lastItem = items.get(items.size()-1);
-        String permId = urlIdHandler.getPermId((lastItem.getUrl()));
-        return url+"?start_author="+ URLEncoder.encode(lastItem.getUploaderUrl(), Encodings.UTF_8)+"&start_permlink="+URLEncoder.encode(permId, Encodings.UTF_8);
+        int size = items.size();
+        if (size > 0) {
+            StreamInfoItem lastItem = items.get(size - 1);
+            String permId = urlIdHandler.getPermId(lastItem.getUrl());
+            String author = urlIdHandler.getAuthor(lastItem.getUrl());
+            return url + "?start_author=" + URLEncoder.encode(author, Encodings.UTF_8) +
+                    "&start_permlink=" + URLEncoder.encode(permId, Encodings.UTF_8);
+        }
+        return url;
     }
 
     public ListExtractor.InfoItemsPage<StreamInfoItem> getPage(String nextPageUrl) throws IOException, ExtractionException {
@@ -109,8 +137,20 @@ public class DTubeStreamInfoItemNavigator {
         );
 
         List<UrlQuery> publicParams = navi.getPublicParams();
-        currentCollector = getCollectorWithParams((Map) publicParams.get(publicParams.size()-1));
-
+        Map<String, Object> params = new HashMap<String, Object>();
+        // TODO move to params package
+        if (publicParams.size() > 0) {
+            Map<String, List<String>> rawParams = (Map<String, List<String>>) publicParams.get(publicParams.size() - 1);
+            for (Map.Entry<String, List<String>> rawParam:rawParams.entrySet()) {
+                String key = rawParam.getKey();
+                List<String> value = rawParam.getValue();
+                int valueSize = value.size();
+                if (valueSize > 0) {
+                    params.put(key, value.get(valueSize - 1));
+                }
+            }
+        }
+        currentCollector = getCollectorWithParams(params);
         return new ListExtractor.InfoItemsPage<StreamInfoItem>(currentCollector, getNextPageUrl());
     }
 }

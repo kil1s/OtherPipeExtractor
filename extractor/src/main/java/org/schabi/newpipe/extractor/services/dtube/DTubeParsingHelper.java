@@ -18,7 +18,9 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DTubeParsingHelper {
     public static final String DOMAIN_ENDPOINT = "https://d.tube";
@@ -76,8 +78,8 @@ public class DTubeParsingHelper {
         steemitRequestsWriter.value(Words.ID, getId());
         steemitRequestsWriter.value(Words.JSONRPC, Versions.SECOND_ONE_DOT);
         steemitRequestsWriter.value(Words.METHOD, method);
-        steemitRequestsWriter.value(Words.PARAMS,params);
-        return steemitRequestsWriter.done();
+        steemitRequestsWriter.value(Words.PARAMS, params);
+        return steemitRequestsWriter.end().done();
     }
 
     public static long getLongTimeJson(JsonObject json, String path, String stringedDataKey, String dateFormat, SimpleDateFormat dateFormatter) throws ParsingException {
@@ -108,9 +110,14 @@ public class DTubeParsingHelper {
         String failSafeRootPath = rootPath == null ? Words.ANONYMOUS : rootPath;
         String path = failSafeRootPath+"."+Words.CONTENT;
         if (meta.has(Words.CONTENT)) {
-            return new DTubePathReturnData<JsonObject>(path, meta.getObject(Words.INFO));
+            return new DTubePathReturnData<JsonObject>(path, meta.getObject(Words.CONTENT));
         }
         throw new ParsingException(path+" do not exists");
+    }
+
+    public static DTubePathReturnData<String> getStringFromMetaInfo(JsonObject meta, String key, String rootPath) throws ParsingException {
+        DTubePathReturnData<JsonObject> args = getInfoObject(meta,rootPath);
+        return getStringFromJson(args.getPath(), args.getData(), key);
     }
 
     public static DTubePathReturnData<String> getStringFromMetaInfo(JsonObject meta, String key) throws ParsingException {
@@ -161,10 +168,14 @@ public class DTubeParsingHelper {
     }
 
     public static DTubeResultAndMeta getResultAndMetaFromSteemitContent(HttpDownloader downloader, String typeKey, Object[] params) throws ParsingException, UnsupportedEncodingException, IOException, ReCaptchaException {
+        return getResultAndMetaFromSteemitContent(downloader, "get_content", typeKey, params);
+    }
+
+    public static DTubeResultAndMeta getResultAndMetaFromSteemitContent(HttpDownloader downloader,  String callName, String typeKey, Object[] params) throws ParsingException, UnsupportedEncodingException, IOException, ReCaptchaException {
         JsonObject metaData;
         JsonObject resultData = null;
 
-        String strRequestBody = getSteemitRequest("get_content",params);
+        String strRequestBody = getSteemitRequest(callName, params);
         byte[] requestBody = strRequestBody.getBytes(Encodings.UTF_8);
         String strResponse = downloader.download(STEEMIT_ENDPOINT, requestBody);
         try {
@@ -197,7 +208,7 @@ public class DTubeParsingHelper {
                     throw new ParsingException("result '"+resultData.toString()+"' is not a object and not a array");
                 }
 
-                if (response.has(Keys.JSON_METADATA) && response.isString(Keys.JSON_METADATA)) {
+                if (resultData.has(Keys.JSON_METADATA) && resultData.isString(Keys.JSON_METADATA)) {
                     try {
                         metaData = JsonParser.object().from(resultData.getString(Keys.JSON_METADATA));
                         if (metaData.has(typeKey)) {
@@ -232,8 +243,8 @@ public class DTubeParsingHelper {
         String strContent = dl.download(url);
         try {
             JsonObject object = JsonParser.object().from(strContent);
-            if (object.has("error") && object.isBoolean("error") && object.getBoolean("error")) {
-                String message = object.has("message") && object.isString("message") ? object.getString("message") : "Server With Error Message";
+            if ((!object.has(Words.RESULTS)) && object.has("error") && object.isBoolean("error") && object.getBoolean("error")) {
+                String message = object.has("message") && object.isString("message") ? object.getString("message") : "server response with error and without message";
                 throw new ParsingException(message);
             }
             if (object.has(Words.RESULTS) && object.get(Words.RESULTS) instanceof JsonArray) {

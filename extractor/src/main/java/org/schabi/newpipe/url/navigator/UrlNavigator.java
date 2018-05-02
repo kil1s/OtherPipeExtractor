@@ -27,7 +27,7 @@ public class UrlNavigator {
 
     public UrlNavigator(List<UrlQuery> queries) {
         for (UrlQuery query:queries) {
-            if (query instanceof WellKnownProtocolHelper) {
+            if (query instanceof UrlProtocol) {
                 protocols.add(query);
             } else if (query instanceof UrlDomainPrivate) {
                 privateDomains.add(query);
@@ -117,24 +117,24 @@ public class UrlNavigator {
 
     public boolean gotProtocol(UrlProtocol requiredProtocol) {
         for (UrlQuery queryProtocol:protocols) {
-            WellKnownProtocolHelper protocol = (WellKnownProtocolHelper) queryProtocol;
-            if (protocol.getProtocol().getClass().isInstance(requiredProtocol)) {
-                if (protocol == WellKnownProtocolHelper.UNKNOWN) {
-                    if (protocol.getName().equalsIgnoreCase(requiredProtocol.getName())) {
-                        return true;
-                    }
-                    continue;
+            UrlProtocol protocol = (UrlProtocol) queryProtocol;
+            if (protocol.getClass().isInstance(requiredProtocol)) {
+                boolean gotPort = protocol.gotPort();
+                if (gotPort == requiredProtocol.gotPort() &&
+                    ((!gotPort) || protocol.getPort().equals(requiredProtocol.getPort())) &&
+                    protocol.getName().equalsIgnoreCase(requiredProtocol.getName()) &&
+                    protocol.getReadableName().equalsIgnoreCase(requiredProtocol.getReadableName())) {
+                    return true;
                 }
-                return true;
             }
         }
         return false;
     }
 
-    public List<WellKnownProtocolHelper> getProtocols() {
-        List<WellKnownProtocolHelper> protocolTyps = new ArrayList<WellKnownProtocolHelper>();
+    public List<UrlProtocol> getProtocols() {
+        List<UrlProtocol> protocolTyps = new ArrayList<UrlProtocol>();
         for (UrlQuery protocol:protocols) {
-            protocolTyps.add((WellKnownProtocolHelper) protocol);
+            protocolTyps.add((UrlProtocol) protocol);
         }
         return protocolTyps;
     }

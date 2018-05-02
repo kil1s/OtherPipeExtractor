@@ -1,20 +1,20 @@
-package org.schabi.newpipe.extractor.url.helper;
+package org.schabi.newpipe.url.helper;
 
 import org.junit.Test;
 import org.schabi.newpipe.extractor.constants.Encodings;
-import org.schabi.newpipe.extractor.url.model.UrlParsingFeature;
-import org.schabi.newpipe.extractor.url.model.UrlQuery;
-import org.schabi.newpipe.extractor.url.model.UrlQueryState;
-import org.schabi.newpipe.extractor.url.model.list.UrlQueryList;
-import org.schabi.newpipe.extractor.url.model.list.domain.UrlDomainPrivate;
-import org.schabi.newpipe.extractor.url.model.list.domain.UrlDomainPublic;
-import org.schabi.newpipe.extractor.url.model.list.filepath.UrlFilepathPrivate;
-import org.schabi.newpipe.extractor.url.model.list.filepath.UrlFilepathPublic;
-import org.schabi.newpipe.extractor.url.model.params.UrlParamsQuery;
-import org.schabi.newpipe.extractor.url.model.params.UrlPrivateParamsQuery;
-import org.schabi.newpipe.extractor.url.model.params.UrlPublicParamsQuery;
-import org.schabi.newpipe.extractor.url.model.protocol.wellknown.WellKnownProtocolHelper;
-import org.schabi.newpipe.extractor.url.model.protocol.wellknown.model.UrlUnknownProtocol;
+import org.schabi.newpipe.url.model.UrlParsingFeature;
+import org.schabi.newpipe.url.model.UrlQuery;
+import org.schabi.newpipe.url.model.UrlQueryState;
+import org.schabi.newpipe.url.model.list.UrlQueryList;
+import org.schabi.newpipe.url.model.list.domain.UrlDomainPrivate;
+import org.schabi.newpipe.url.model.list.domain.UrlDomainPublic;
+import org.schabi.newpipe.url.model.list.filepath.UrlFilepathPrivate;
+import org.schabi.newpipe.url.model.list.filepath.UrlFilepathPublic;
+import org.schabi.newpipe.url.model.params.UrlParamsQuery;
+import org.schabi.newpipe.url.model.params.UrlPrivateParamsQuery;
+import org.schabi.newpipe.url.model.params.UrlPublicParamsQuery;
+import org.schabi.newpipe.url.model.protocol.wellknown.WellKnownProtocolHelper;
+import org.schabi.newpipe.url.model.protocol.wellknown.model.UrlUnknownProtocol;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;

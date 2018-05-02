@@ -29,6 +29,17 @@ public class DTubeSettings extends OverrideDynamicSettings {
     public static final String REMOTE = "remote";
     public static final String DISPLAY_NODES = "displayNodes";
 
+    public DTubeSettings() {
+        // TODO better error handling
+        try {
+            refresh();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ReCaptchaException e) {
+            e.printStackTrace();
+        }
+    }
+
     /*
      * getSafeIPFSGateways
      *

@@ -29,7 +29,7 @@ public enum DTubeKiosk {
 
     public static DTubeKiosk getKioskById(String id) {
         for (DTubeKiosk value:DTubeKiosk.values()) {
-            if (value.getId().equals("id")) {
+            if (value.getId().equals(id)) {
                 return value;
             }
         }

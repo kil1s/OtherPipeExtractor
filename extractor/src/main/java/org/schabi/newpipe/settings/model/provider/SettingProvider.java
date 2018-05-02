@@ -18,7 +18,7 @@ public abstract class SettingProvider<D> {
     }
 
     public void setData(D data) throws WrongSettingsDataException {
-        if (SettingsHelper.instanceOfSettingsTyp(data, typ)) {
+        if (!SettingsHelper.instanceOfSettingsTyp(data, typ)) {
             throw new WrongSettingsDataException("data is not compatible with the SettingsTyp "+typ.name());
         }
         this.data = data;
