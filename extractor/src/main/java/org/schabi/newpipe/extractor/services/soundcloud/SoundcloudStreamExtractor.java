@@ -210,6 +210,15 @@ public class SoundcloudStreamExtractor extends StreamExtractor {
         return collector;
     }
 
+    @Override
+    public String[] getDonationLinks() {
+        return new String[0];
+    }
+
+    @Override
+    public String[] getAffiliateLinks() {
+        return new String[0];
+    }
 
     @Override
     public String getErrorMessage() {

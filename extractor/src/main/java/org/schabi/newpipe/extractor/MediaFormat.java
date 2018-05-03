@@ -36,6 +36,7 @@ public enum MediaFormat {
     M4A         (0x3,   "m4a",      "m4a",  "audio/mp4"),
     WEBMA       (0x4,   "WebM",     "webm", "audio/webm"),
     MP3         (0x5,   "MP3",      "mp3",  "audio/mpeg"),
+    OPUS        (0x7,   "opus",  "opus", "audio/opus"),
     // other formats
     UNKNOWN     (0x6,   "Unknown",  "",  "");
 
