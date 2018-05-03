@@ -8,7 +8,9 @@ import org.schabi.newpipe.extractor.stream.StreamInfoItemExtractor;
 import org.schabi.newpipe.extractor.stream.StreamType;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.schabi.newpipe.extractor.services.dtube.DTubeStreamExtractor.DATE_FORMAT;
 import static org.schabi.newpipe.extractor.services.dtube.DTubeStreamExtractor.DATE_FORMATTER;
@@ -43,9 +45,28 @@ public class DTubeStreamInfoItemExtractor implements StreamInfoItemExtractor {
         if (info.has(Words.DURATION)) {
             if (info.isNumber(Words.DURATION)) {
                 return new Double(info.getNumber(Words.DURATION).doubleValue()*1000).longValue();
-            } else {
-                throw new ParsingException(path+"."+Words.DURATION+" is not a number");
+            } else if (info.isString(Words.DURATION)) {
+                Number numberLong = null;
+                try {
+                    numberLong = Double.parseDouble(info.getString(Words.DURATION));
+                } catch (NumberFormatException ex) {
+                    try {
+                        numberLong = Integer.parseInt(info.getString(Words.DURATION));
+                    } catch (NumberFormatException ex1) {
+                        StringBuilder stackBuilder = new StringBuilder("[0]").append(ex.getMessage());
+                        for (StackTraceElement exElTrace:ex.getStackTrace()) {
+                            stackBuilder.append(new StackTraceElement(exElTrace.getClassName(), exElTrace.getMethodName(), "[0] " + exElTrace.getFileName(), exElTrace.getLineNumber())).append('\n');
+                        }
+                        stackBuilder.append("\n[1]").append(ex1.getMessage());
+                        for (StackTraceElement exElTrace:ex1.getStackTrace()) {
+                            stackBuilder.append(new StackTraceElement(exElTrace.getClassName(), exElTrace.getMethodName(), "[1] " + exElTrace.getFileName(), exElTrace.getLineNumber())).append('\n');
+                        }
+                        throw new ParsingException(stackBuilder.toString());
+                    }
+                }
+                return numberLong.longValue();
             }
+            throw new ParsingException(path+"."+Words.DURATION+" is not a number");
         }
         throw new ParsingException(path+" got no "+ Words.DURATION +" object");
     }
