@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DTubeStreamExtractor extends StreamExtractor {
+    // Hey this is my email: steenbuckflorian@gmail.com ET589GK
     public static final String RSHARES = "rshares";
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(DATE_FORMAT);
@@ -288,6 +289,16 @@ public class DTubeStreamExtractor extends StreamExtractor {
             collector.commit(extractor);
         }
         return collector;
+    }
+
+    @Override
+    public String[] getDonationLinks() throws ExtractionException {
+        return new String[0];
+    }
+
+    @Override
+    public String[] getAffiliateLinks() throws ExtractionException {
+        return new String[0];
     }
 
     protected String getPermLink() throws ParsingException {

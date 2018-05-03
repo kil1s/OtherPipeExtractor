@@ -1,7 +1,6 @@
 package org.schabi.newpipe.settings.helper;
 import org.schabi.newpipe.settings.typ.SettingsOutput;
 import org.schabi.newpipe.settings.typ.SettingsTyp;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.Map;
 
 public class SettingsHelper {
     private static boolean isUnsupportedSingle(Object instance) {
-        return instance instanceof Collection || instance instanceof Map || instance instanceof Tree;
+        return instance instanceof Collection || instance instanceof Map;
     }
 
     public static boolean instanceOfSettingsTyp(List instance, SettingsTyp typ) {
