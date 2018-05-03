@@ -8,7 +8,7 @@ import java.util.Iterator;
 /*
  * BaseMap - a map that is less strict then the java ones and can be used complete without any high level classes only Iterable is required
  */
-public abstract class BaseMap<K, V, S extends Iterable, E extends MapEntry> implements Iterable {
+public abstract class BaseMap<K, V, VO, S extends Iterable, E extends MapEntry> implements Iterable {
     @Override
     public Iterator<E> iterator() {
         return getEntries().iterator();
@@ -17,7 +17,7 @@ public abstract class BaseMap<K, V, S extends Iterable, E extends MapEntry> impl
     public abstract boolean got(K key, V value);
     public abstract void add(K key, V value);
     public abstract void remove(K key, V value);
-    public abstract E get(K key);
+    public abstract VO get(K key);
 
     public abstract void clear();
     public abstract int size();

@@ -2,5 +2,7 @@ package org.schabi.newpipe.http.resp.status;
 
 public interface HttpResponseStatus {
     String getMessage();
-    int getStatus();
+    boolean isValidStatus();
+    Integer getStatus();
+    String getOriginalStatus();
 }

@@ -53,7 +53,7 @@ public  class KioskList {
             return getExtractorById(defaultKiosk, nextPageUrl);
         } else {
             if(!kioskList.isEmpty()) {
-                // if not set get any entry
+                // if not set get any wellknow
                 Object[] keySet = kioskList.keySet().toArray();
                 return getExtractorById(keySet[0].toString(), nextPageUrl);
             } else {

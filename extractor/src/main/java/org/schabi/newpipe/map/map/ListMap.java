@@ -5,7 +5,7 @@ import org.schabi.newpipe.map.entry.EntireEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListMap<K, V> extends BaseMap<K, V, List, EntireEntry> {
+public class ListMap<K, V> extends BaseMap<K, V, V, List, EntireEntry> {
     protected List<EntireEntry<K, V>> list = new ArrayList<EntireEntry<K, V>>();
 
     @Override
@@ -34,10 +34,10 @@ public class ListMap<K, V> extends BaseMap<K, V, List, EntireEntry> {
     }
 
     @Override
-    public EntireEntry<K, V> get(K key) {
-        for (EntireEntry<K, V> value:list) {
-            if (key.equals(value.getKey())) {
-                return value;
+    public V get(K key) {
+        for (EntireEntry<K, V> entry:list) {
+            if (key.equals(entry.getKey())) {
+                return entry.getValue();
             }
         }
         return null;

@@ -51,7 +51,7 @@ public class UrlParsingHelper {
      * the #? delimiter is not a indicator for params or map
      *
      * params delimiter = ?
-     * option/entry<key, value> delimiter = &
+     * option/wellknow<key, value> delimiter = &
      * protocol delimiters = :// :
      *
      * Escaping is not visible in ascii but keys, values and options get unescaped
