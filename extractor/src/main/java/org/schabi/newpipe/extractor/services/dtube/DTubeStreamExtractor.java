@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DTubeStreamExtractor extends StreamExtractor {
-    // Hey this is my email: steenbuckflorian@gmail.com ET589GK
     public static final String RSHARES = "rshares";
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(DATE_FORMAT);
