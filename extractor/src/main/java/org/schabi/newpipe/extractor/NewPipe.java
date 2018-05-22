@@ -21,7 +21,6 @@ package org.schabi.newpipe.extractor;
  */
 
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
-import org.schabi.newpipe.http.HttpDownloader;
 
 import java.util.List;
 
@@ -29,16 +28,16 @@ import java.util.List;
  * Provides access to streaming services supported by NewPipe.
  */
 public class NewPipe {
-    private static HttpDownloader downloader = null;
+    private static Downloader downloader = null;
 
     private NewPipe() {
     }
 
-    public static void init(HttpDownloader d) {
+    public static void init(Downloader d) {
         downloader = d;
     }
 
-    public static HttpDownloader getDownloader() {
+    public static Downloader getDownloader() {
         return downloader;
     }
 

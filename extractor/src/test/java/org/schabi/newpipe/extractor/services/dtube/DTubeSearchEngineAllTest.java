@@ -4,12 +4,10 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.schabi.newpipe.Downloader;
-import org.schabi.newpipe.extractor.NewPipe;
-import org.schabi.newpipe.extractor.search.SearchEngine;
 import org.schabi.newpipe.extractor.services.soundcloud.BaseSoundcloudSearchTest;
 
 import static org.junit.Assert.assertTrue;
-import static org.schabi.newpipe.extractor.ServiceList.DTube;
+import static org.schabi.newpipe.extractor.
 
 /**
  * Test for {@link SearchEngine}
