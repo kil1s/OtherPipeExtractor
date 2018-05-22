@@ -1,4 +1,4 @@
-package org.schabi.newpipe.extractor.services.youtube;
+package org.schabi.newpipe.extractor.services.youtube.extractors;
 
 import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonObject;
@@ -10,14 +10,12 @@ import org.jsoup.nodes.Element;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptableObject;
-import org.schabi.newpipe.http.HttpDownloader;
-import org.schabi.newpipe.extractor.NewPipe;
-import org.schabi.newpipe.extractor.StreamingService;
-import org.schabi.newpipe.extractor.Subtitles;
+import org.schabi.newpipe.extractor.*;
 import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
+import org.schabi.newpipe.extractor.services.youtube.ItagItem;
 import org.schabi.newpipe.extractor.stream.*;
 import org.schabi.newpipe.extractor.utils.DonationLinkHelper;
 import org.schabi.newpipe.extractor.utils.Parser;
@@ -86,23 +84,13 @@ public class YoutubeStreamExtractor extends StreamExtractor {
 
     private boolean isAgeRestricted;
 
-    public YoutubeStreamExtractor(StreamingService service, String url) {
-        super(service, url);
+    public YoutubeStreamExtractor(StreamingService service, UrlIdHandler urlIdHandler) throws ExtractionException {
+        super(service, urlIdHandler);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
     // Impl
     //////////////////////////////////////////////////////////////////////////*/
-
-    @Nonnull
-    @Override
-    public String getId() throws ParsingException {
-        try {
-            return getUrlIdHandler().getId(getCleanUrl());
-        } catch (Exception e) {
-            throw new ParsingException("Could not get stream id");
-        }
-    }
 
     @Nonnull
     @Override
@@ -138,7 +126,7 @@ public class YoutubeStreamExtractor extends StreamExtractor {
     @Override
     public String getThumbnailUrl() throws ParsingException {
         assertPageFetched();
-        // Try to get high resolution thumbnail first, if it fails, useable low res from the player instead
+        // Try to get high resolution thumbnail first, if it fails, use low res from the player instead
         try {
             return doc.select("link[itemprop=\"thumbnailUrl\"]").first().attr("abs:href");
         } catch (Exception ignored) {
@@ -580,8 +568,8 @@ public class YoutubeStreamExtractor extends StreamExtractor {
 
     private String pageHtml = null;
 
-    private String getPageHtml(HttpDownloader downloader) throws IOException, ExtractionException {
-        final String verifiedUrl = getCleanUrl() + VERIFIED_URL_PARAMS;
+    private String getPageHtml(Downloader downloader) throws IOException, ExtractionException {
+        final String verifiedUrl = getUrl() + VERIFIED_URL_PARAMS;
         if (pageHtml == null) {
             pageHtml = downloader.download(verifiedUrl);
         }
@@ -589,9 +577,9 @@ public class YoutubeStreamExtractor extends StreamExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
+    public void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException {
         final String pageContent = getPageHtml(downloader);
-        doc = Jsoup.parse(pageContent, getCleanUrl());
+        doc = Jsoup.parse(pageContent, getUrl());
 
         final String playerUrl;
         // Check if the video is age restricted
@@ -672,7 +660,7 @@ public class YoutubeStreamExtractor extends StreamExtractor {
     @Nonnull
     private EmbeddedInfo getEmbeddedInfo() throws ParsingException, ReCaptchaException {
         try {
-            final HttpDownloader downloader = NewPipe.getDownloader();
+            final Downloader downloader = NewPipe.getDownloader();
             final String embedUrl = "https://www.youtube.com/embed/" + getId();
             final String embedPageContent = downloader.download(embedUrl);
 
@@ -706,7 +694,7 @@ public class YoutubeStreamExtractor extends StreamExtractor {
         String decryptionCode;
 
         try {
-            HttpDownloader downloader = NewPipe.getDownloader();
+            Downloader downloader = NewPipe.getDownloader();
             if (!playerUrl.contains("https://youtube.com")) {
                 //sometimes the https://youtube.com part does not get send with
                 //than we have to add it by hand
@@ -785,7 +773,7 @@ public class YoutubeStreamExtractor extends StreamExtractor {
 
         final JsonObject renderer = captions.getObject("playerCaptionsTracklistRenderer", new JsonObject());
         final JsonArray captionsArray = renderer.getArray("captionTracks", new JsonArray());
-        // todo: useable this to apply auto translation to different language from a source language
+        // todo: use this to apply auto translation to different language from a source language
         final JsonArray autoCaptionsArray = renderer.getArray("translationLanguages", new JsonArray());
 
         // This check is necessary since there may be cases where subtitles metadata do not contain caption track info
@@ -949,7 +937,7 @@ public class YoutubeStreamExtractor extends StreamExtractor {
                 String thumbnailUrl = img.attr("abs:src");
                 // Sometimes youtube sends links to gif files which somehow seem to not exist
                 // anymore. Items with such gif also offer a secondary image source. So we are going
-                // to useable that if we caught such an item.
+                // to use that if we caught such an item.
                 if (thumbnailUrl.contains(".gif")) {
                     thumbnailUrl = img.attr("data-thumb");
                 }

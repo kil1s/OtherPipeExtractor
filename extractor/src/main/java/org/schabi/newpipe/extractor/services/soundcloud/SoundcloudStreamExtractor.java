@@ -23,8 +23,8 @@ import static org.schabi.newpipe.extractor.utils.Utils.replaceHttpWithHttps;
 public class SoundcloudStreamExtractor extends StreamExtractor {
     private JsonObject track;
 
-    public SoundcloudStreamExtractor(StreamingService service, String url) {
-        super(service, url);
+    public SoundcloudStreamExtractor(StreamingService service, UrlIdHandler urlIdHandler) {
+        super(service, urlIdHandler);
     }
 
     @Override
@@ -35,12 +35,6 @@ public class SoundcloudStreamExtractor extends StreamExtractor {
         if (!policy.equals("ALLOW") && !policy.equals("MONETIZE")) {
             throw new ContentNotAvailableException("Content not available: policy " + policy);
         }
-    }
-
-    @Nonnull
-    @Override
-    public String getCleanUrl() {
-        return track.isString("permalink_url") ? replaceHttpWithHttps(track.getString("permalink_url")) : getOriginalUrl();
     }
 
     @Nonnull
