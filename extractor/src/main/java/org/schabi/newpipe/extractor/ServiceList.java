@@ -3,10 +3,8 @@ package org.schabi.newpipe.extractor;
 import org.schabi.newpipe.extractor.services.dtube.DTubeService;
 import org.schabi.newpipe.extractor.services.soundcloud.SoundcloudService;
 import org.schabi.newpipe.extractor.services.youtube.YoutubeService;
-import org.schabi.newpipe.settings.model.settings.interfaces.Settings;
 
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;

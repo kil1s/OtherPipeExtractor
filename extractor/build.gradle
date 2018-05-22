@@ -6,6 +6,10 @@ dependencies {
     implementation 'org.mozilla:rhino:1.7.7.1'
     implementation 'com.github.spotbugs:spotbugs-annotations:3.1.0'
     implementation 'org.nibor.autolink:autolink:0.8.0'
+    implementation 'com.github.FlorianSteenbuck:OtherFeatures:j0.0.1'
+    implementation 'com.github.FlorianSteenbuck:OtherUrl:dev-SNAPSHOT'
+    implementation 'com.github.FlorianSteenbuck:OtherMap:dev-SNAPSHOT'
+
 
     testImplementation 'junit:junit:4.12'
 }

@@ -22,8 +22,8 @@ public class DTubeSearchEngine extends SearchEngine {
     @Override
     public InfoItemsSearchCollector search(String query, int page, String contentCountry, Filter filter) throws IOException, ExtractionException {
         InfoItemsSearchCollector collector = getInfoItemSearchCollector();
-        String urlQuery = URLEncoder.encode("meta.video.info.title:* AND "+ query+" ", Encodings.UTF_8);
-        String url = DTubeParsingHelper.ASKSTEEM_ENDPOINT+"/search?q="+urlQuery+"&pg="+page;
+        String urlQuery = "meta.video.info.title:* AND "+ query+" ";
+        String url = DTubeParsingHelper.ASKSTEEM_ENDPOINT+"/search?q="+urlQuery+"&pg="+page+"&include=meta";
         for (StreamInfoItemExtractor extractor:DTubeParsingHelper.getAskSteemStreamExtractorsByUrl(url, service)) {
             collector.commit(extractor);
         }

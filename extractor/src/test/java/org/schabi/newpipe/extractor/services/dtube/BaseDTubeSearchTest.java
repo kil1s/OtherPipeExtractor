@@ -23,7 +23,7 @@ public abstract class BaseDTubeSearchTest {
             assertIsSecureUrl(infoItem.getThumbnailUrl());
             assertFalse(infoItem.getName().isEmpty());
             assertFalse("Name is probably a URI: " + infoItem.getName(),
-                    infoItem.getName().contains("://"));
+                    (infoItem.getName().contains(":") || infoItem.getName().contains("://")));
             if(infoItem instanceof StreamInfoItem) {
                 // test stream item
                 StreamInfoItem streamInfoItem = (StreamInfoItem) infoItem;

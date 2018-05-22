@@ -69,6 +69,11 @@ public class DTubeChannelExtractor extends ChannelExtractor {
         return DTubeParsingHelper.getStringFromJson(Words.META, meta,"about").getData();
     }
 
+    @Override
+    public String[] getDonationLinks() throws ParsingException {
+        return new String[0];
+    }
+
     @Nonnull
     @Override
     public InfoItemsPage<StreamInfoItem> getInitialPage() throws IOException, ExtractionException {
