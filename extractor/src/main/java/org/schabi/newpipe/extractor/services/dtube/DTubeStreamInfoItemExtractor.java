@@ -84,7 +84,7 @@ public class DTubeStreamInfoItemExtractor implements StreamInfoItemExtractor {
 
     @Override
     public String getUploaderUrl() throws ParsingException {
-        return service.getChannelUrlIdHandler().getUrl();
+        return service.getChannelUrlIdHandler().setId("@"+getUploaderName() ).getUrl();
     }
 
     @Override

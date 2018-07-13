@@ -120,6 +120,7 @@ public class DTubeStreamInfoItemNavigator {
         int size = items.size();
         if (size > 0) {
             StreamInfoItem lastItem = items.get(size - 1);
+            urlIdHandler.setUrl(lastItem.getUrl());
             String permId = urlIdHandler.getPermId();
             String author = urlIdHandler.getAuthor();
             return url + "?start_author=" + URLEncoder.encode(author, Encodings.UTF_8) +

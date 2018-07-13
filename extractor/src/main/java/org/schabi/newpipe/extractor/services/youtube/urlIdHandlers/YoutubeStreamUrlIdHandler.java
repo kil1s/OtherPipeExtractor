@@ -138,7 +138,7 @@ public class YoutubeStreamUrlIdHandler extends UrlIdHandler {
         String content;
         try {
             content = downloader.download("https://www.youtube.com/shared?ci=" + sharedId);
-        } catch (IOException | ReCaptchaException e) {
+        } catch (IOException e) {
             throw new ParsingException("Unable to resolve shared link", e);
         }
         Document document = Jsoup.parse(content);

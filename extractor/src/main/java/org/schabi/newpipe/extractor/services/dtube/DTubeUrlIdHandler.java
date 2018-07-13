@@ -242,7 +242,7 @@ public class DTubeUrlIdHandler extends ListUrlIdHandler {
                         if (size > 1 && indicator.equals(VIDEO) && acceptVideo) {
                             return true;
                         }
-                        if (size > 2 && indicator.equals(CHANNEL) && acceptChannel) {
+                        if (size > 1 && indicator.equals(CHANNEL) && acceptChannel) {
                             return true;
                         }
                     }
@@ -252,9 +252,5 @@ public class DTubeUrlIdHandler extends ListUrlIdHandler {
             throw new ParsingException(e.getMessage());
         }
         return false;
-    }
-
-    public String[] getAvailableContentFilter() {
-        return new String[]{"video", "channel", "kiosk"};
     }
 }

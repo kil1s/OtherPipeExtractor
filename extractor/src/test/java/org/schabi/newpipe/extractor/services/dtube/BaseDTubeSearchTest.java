@@ -23,14 +23,14 @@ public abstract class BaseDTubeSearchTest {
             assertIsSecureUrl(infoItem.getThumbnailUrl());
             assertFalse(infoItem.getName().isEmpty());
             assertFalse("Name is probably a URI: " + infoItem.getName(),
-                    (infoItem.getName().contains(":") || infoItem.getName().contains("://")));
+                    (infoItem.getName().contains("://")));
             if(infoItem instanceof StreamInfoItem) {
                 // test stream item
                 StreamInfoItem streamInfoItem = (StreamInfoItem) infoItem;
                 assertIsSecureUrl(streamInfoItem.getUploaderUrl());
                 assertFalse(streamInfoItem.getUploadDate().isEmpty());
                 assertFalse(streamInfoItem.getUploaderName().isEmpty());
-                assertEquals(StreamType.AUDIO_STREAM, streamInfoItem.getStreamType());
+                assertEquals(StreamType.VIDEO_STREAM, streamInfoItem.getStreamType());
             } else if(infoItem instanceof ChannelInfoItem) {
                 // Nothing special to check?
             } else if(infoItem instanceof PlaylistInfoItem)  {

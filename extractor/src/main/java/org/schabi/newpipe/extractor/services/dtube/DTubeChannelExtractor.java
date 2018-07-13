@@ -107,7 +107,7 @@ public class DTubeChannelExtractor extends ChannelExtractor {
                 urlHandler.getAuthor(),
                 getService(),
                 new Object[]{"database_api", "get_discussions_by_blog"},
-                ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler().setUrl(getOriginalUrl()))
+                ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler())
         );
     }
 

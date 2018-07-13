@@ -243,7 +243,6 @@ public class Downloader implements HttpDownloader {
 
     private Map<String,List<String>> head(HttpsURLConnection con, HttpHeadExecutionTyp...typs) throws IOException {
         IOException lastIOException = null;
-        ReCaptchaException lastReCaptchaException = null;
 
         typs = typs == null || typs.length <= 0 ? HttpHeadExecutionTyp.defaults() : typs;
         for (HttpHeadExecutionTyp typ:typs) {
@@ -259,20 +258,12 @@ public class Downloader implements HttpDownloader {
                         return con.getHeaderFields();
                 }
             } catch (IOException e) {
-                lastReCaptchaException = null;
                 lastIOException = e;
-            } catch (ReCaptchaException re) {
-                lastIOException = null;
-                lastReCaptchaException = re;
             }
         }
 
         if (lastIOException != null) {
             throw lastIOException;
-        }
-
-        if (lastReCaptchaException != null) {
-            throw lastReCaptchaException;
         }
 
         return new HashMap<String, List<String>>();
@@ -319,7 +310,7 @@ public class Downloader implements HttpDownloader {
     }
 
     @Override
-    public Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, HttpHeadExecutionTyp...typs) throws IOException, {
+    public Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, HttpHeadExecutionTyp...typs) throws IOException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         for (Map.Entry<String, String> pair: customProperties.entrySet()) {

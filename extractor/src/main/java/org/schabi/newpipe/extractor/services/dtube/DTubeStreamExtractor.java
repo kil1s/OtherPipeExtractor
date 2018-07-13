@@ -2,6 +2,7 @@ package org.schabi.newpipe.extractor.services.dtube;
 
 import com.grack.nanojson.*;
 import org.schabi.newpipe.extractor.*;
+import org.schabi.newpipe.extractor.constants.Encodings;
 import org.schabi.newpipe.extractor.constants.Keys;
 import org.schabi.newpipe.extractor.constants.Words;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
@@ -12,15 +13,14 @@ import org.schabi.newpipe.extractor.stream.*;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DTubeStreamExtractor extends StreamExtractor {
     public static final String RSHARES = "rshares";
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final SimpleDateFormat SIMPLE_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(DATE_FORMAT);
 
     private JsonObject result;
@@ -38,8 +38,7 @@ public class DTubeStreamExtractor extends StreamExtractor {
     @Override
     public String getUploadDate() throws ParsingException {
         assertPageFetched();
-        SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return newDateFormat.format(new Date(DTubeParsingHelper.getLongTimeJsonFromResult(result, Words.ACTIVE, DATE_FORMAT, DATE_FORMATTER)));
+        return SIMPLE_DATE_FORMATTER.format(new Date(DTubeParsingHelper.getLongTimeJsonFromResult(result, "created", DATE_FORMAT, DATE_FORMATTER)));
     }
 
     @Nonnull
@@ -159,7 +158,7 @@ public class DTubeStreamExtractor extends StreamExtractor {
     @Override
     public String getUploaderUrl() throws ParsingException {
         assertPageFetched();
-        return getService().getChannelUrlIdHandler().getUrl();
+        return getService().getChannelUrlIdHandler().setId("@"+getUploaderName()).getUrl();
     }
 
     @Nonnull
@@ -283,7 +282,14 @@ public class DTubeStreamExtractor extends StreamExtractor {
         assertPageFetched();
         StreamInfoItemsCollector collector = new StreamInfoItemsCollector(getServiceId());
 
-        String url = DTubeParsingHelper.ASKSTEEM_ENDPOINT +"/related?author="+getUploaderName()+"&permlink="+getPermLink()+"&include=meta,payout&q=created:>="+getUploadDate()+" AND meta.video.info.title:*";
+        Calendar freshDate = Calendar.getInstance();
+        freshDate.add(Calendar.DATE, -7);
+
+        String author = URLEncoder.encode(getUploaderName(), Encodings.UTF_8).replace("+", "%20");
+        String include = URLEncoder.encode("meta,payout", Encodings.UTF_8);
+        String query = URLEncoder.encode("created:>="+SIMPLE_DATE_FORMATTER.format(freshDate.getTime())+" AND meta.video.info.title:*", Encodings.UTF_8).replace("+", "%20");
+        String url = DTubeParsingHelper.ASKSTEEM_ENDPOINT  + "/related?author="+author+ "&permlink="+getPermLink()+"&include="+include+ "&q="+query ;
+
         for (StreamInfoItemExtractor extractor:DTubeParsingHelper.getAskSteemStreamExtractorsByUrl(url, getService())) {
             collector.commit(extractor);
         }

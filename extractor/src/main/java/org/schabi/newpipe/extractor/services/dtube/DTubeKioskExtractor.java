@@ -20,21 +20,15 @@ public class DTubeKioskExtractor extends KioskExtractor {
         super(streamingService, url, kioskId);
     }
 
-    @Nonnull
-    @Override
-    protected UrlIdHandler getUrlIdHandler()  {
-        return DTubeUrlIdHandler.getKioskInstance();
-    }
-
     @Override
     public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
-        kiosk = DTubeKiosk.getKioskById(getUrlIdHandler().getId());
+        kiosk = DTubeKiosk.getKioskById(getId());
         pageNavi = new DTubeStreamInfoItemNavigator(
                 12,
                 "dtube",
                 getService(),
                 new Object[]{"database_api", "get_discussions_by_"+kiosk.getBy()},
-                ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler().setUrl(getOriginalUrl()))
+                ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler())
         );
     }
 

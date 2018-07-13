@@ -255,7 +255,7 @@ public class DTubeParsingHelper {
 
                     JsonObject jsonVideo = (JsonObject) video;
                     if (jsonVideo.has(Words.META) && jsonVideo.get(Words.META) instanceof JsonObject) {
-                        extractors.add(new DTubeStreamInfoItemExtractor(service, jsonVideo.getObject(Words.META), jsonVideo));
+                        extractors.add(new DTubeStreamInfoItemExtractor(service, jsonVideo.getObject(Words.META).getObject(Words.VIDEO), jsonVideo));
                     }
                 }
             }

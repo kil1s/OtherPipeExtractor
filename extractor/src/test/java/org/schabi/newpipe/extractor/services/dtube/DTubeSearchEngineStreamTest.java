@@ -16,13 +16,13 @@ import static org.schabi.newpipe.extractor.ServiceList.DTube;
 /**
  * Test for {@link SearchEngine}
  */
-public class DTubeSearchEngineStreamTest extends BaseSoundcloudSearchTest {
+public class DTubeSearchEngineStreamTest extends BaseDTubeSearchTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
         NewPipe.init(Downloader.getInstance());
         SearchEngine engine = DTube.getSearchEngine();
-
+        // https://api.asksteem.com/search?q=meta.video.info.title%3A*%20AND%20lill%20uzi%20vert&include=meta%2Cpayout
         result = engine.search("lill uzi vert", 0, "de", SearchEngine.Filter.STREAM)
                 .getSearchResult();
     }

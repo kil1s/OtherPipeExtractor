@@ -20,6 +20,7 @@ package org.schabi.newpipe.extractor.services.youtube.extractors;
  * along with NewPipe.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -48,7 +49,7 @@ public class YoutubeTrendingExtractor extends KioskExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException {
+    public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
         final String contentCountry = getContentCountry();
         String url = getUrl();
         if(contentCountry != null && !contentCountry.isEmpty()) {

@@ -1,6 +1,7 @@
 package org.schabi.newpipe.extractor.services.youtube.extractors;
 
 
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
@@ -53,7 +54,7 @@ public class YoutubeChannelExtractor extends ChannelExtractor {
     }
 
     @Override
-    public void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException {
+    public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
         String channelUrl = super.getUrl() + CHANNEL_URL_PARAMETERS;
         String pageContent = downloader.download(channelUrl);
         doc = Jsoup.parse(pageContent, channelUrl);

@@ -71,7 +71,7 @@ public class DTubeStreamExtractorDefaultTest {
 
     @Test
     public void testGetUploadDate() throws ParsingException {
-        assertEquals("2018-04-27", extractor.getUploadDate());
+        assertEquals("2018-04-09", extractor.getUploadDate());
     }
 
     @Test
@@ -100,8 +100,6 @@ public class DTubeStreamExtractorDefaultTest {
         assertEquals(extractor.getStreamType(), StreamType.VIDEO_STREAM);
     }
 
-    @Ignore
-    // caused by problem with asksteem api dtube themself got problems with this :-)
     @Test
     public void testGetRelatedVideos() throws ExtractionException, IOException {
         StreamInfoItemsCollector relatedVideos = extractor.getRelatedVideos();
