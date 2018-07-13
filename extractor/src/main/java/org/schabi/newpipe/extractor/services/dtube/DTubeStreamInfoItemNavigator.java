@@ -3,7 +3,7 @@ package org.schabi.newpipe.extractor.services.dtube;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.ListExtractor;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
@@ -14,10 +14,10 @@ import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.stream.StreamInfoItemsCollector;
-import org.schabi.newpipe.url.helper.UrlParsingHelper;
-import org.schabi.newpipe.url.model.UrlParsingFeature;
-import org.schabi.newpipe.url.model.UrlQuery;
-import org.schabi.newpipe.url.navigator.UrlNavigator;
+import com.github.FlorianSteenbuck.other.url.helper.UrlParsingHelper;
+import com.github.FlorianSteenbuck.other.url.model.UrlParsingFeature;
+import com.github.FlorianSteenbuck.other.url.model.UrlQuery;
+import com.github.FlorianSteenbuck.other.url.navigator.UrlNavigator;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -35,8 +35,7 @@ public class DTubeStreamInfoItemNavigator {
     protected DTubeUrlIdHandler urlIdHandler;
     protected StreamInfoItemsCollector currentCollector;
 
-    public DTubeStreamInfoItemNavigator(String url, int limit, String tag, StreamingService service, Object[] params, DTubeUrlIdHandler urlIdHandler) {
-        this.url = url;
+    public DTubeStreamInfoItemNavigator(int limit, String tag, StreamingService service, Object[] params, DTubeUrlIdHandler urlIdHandler) {
         this.limit = limit;
         this.tag = tag;
         this.service = service;
@@ -121,8 +120,8 @@ public class DTubeStreamInfoItemNavigator {
         int size = items.size();
         if (size > 0) {
             StreamInfoItem lastItem = items.get(size - 1);
-            String permId = urlIdHandler.getPermId(lastItem.getUrl());
-            String author = urlIdHandler.getAuthor(lastItem.getUrl());
+            String permId = urlIdHandler.getPermId();
+            String author = urlIdHandler.getAuthor();
             return url + "?start_author=" + URLEncoder.encode(author, Encodings.UTF_8) +
                     "&start_permlink=" + URLEncoder.encode(permId, Encodings.UTF_8);
         }

@@ -10,8 +10,8 @@ import org.schabi.newpipe.extractor.kiosk.KioskExtractor;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
 import org.schabi.newpipe.extractor.search.SearchEngine;
-import org.schabi.newpipe.settings.model.settings.EmptySettings;
-import org.schabi.newpipe.settings.model.settings.interfaces.Settings;
+import com.github.FlorianSteenbuck.other.settings.model.settings.EmptySettings;
+import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
 import org.schabi.newpipe.extractor.subscription.SubscriptionExtractor;
 

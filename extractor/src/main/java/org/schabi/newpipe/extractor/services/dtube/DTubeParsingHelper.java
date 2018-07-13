@@ -1,7 +1,7 @@
 package org.schabi.newpipe.extractor.services.dtube;
 
 import com.grack.nanojson.*;
-import org.schabi.newpipe.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.constants.Encodings;
@@ -10,7 +10,7 @@ import org.schabi.newpipe.extractor.constants.Versions;
 import org.schabi.newpipe.extractor.constants.Words;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
-import org.schabi.newpipe.settings.model.settings.interfaces.Settings;
+import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.stream.StreamInfoItemExtractor;
 
 import java.io.IOException;

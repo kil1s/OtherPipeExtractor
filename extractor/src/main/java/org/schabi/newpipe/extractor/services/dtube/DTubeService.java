@@ -1,5 +1,6 @@
 package org.schabi.newpipe.extractor.services.dtube;
 
+import org.schabi.newpipe.extractor.ListUrlIdHandler;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.SuggestionExtractor;
 import org.schabi.newpipe.extractor.UrlIdHandler;
@@ -10,9 +11,8 @@ import org.schabi.newpipe.extractor.kiosk.KioskExtractor;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
 import org.schabi.newpipe.extractor.search.SearchEngine;
-import org.schabi.newpipe.extractor.services.soundcloud.SoundcloudSearchEngine;
-import org.schabi.newpipe.settings.model.settings.interfaces.DynamicSettings;
-import org.schabi.newpipe.settings.model.settings.interfaces.Settings;
+import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.DynamicSettings;
+import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
 import org.schabi.newpipe.extractor.subscription.SubscriptionExtractor;
 
@@ -58,12 +58,12 @@ public class DTubeService extends StreamingService {
     }
 
     @Override
-    public UrlIdHandler getChannelUrlIdHandler() {
+    public ListUrlIdHandler getChannelUrlIdHandler() {
         return DTubeUrlIdHandler.getChannelInstance();
     }
 
     @Override
-    public UrlIdHandler getPlaylistUrlIdHandler() {
+    public ListUrlIdHandler getPlaylistUrlIdHandler() {
         return null;
     }
 
@@ -78,22 +78,22 @@ public class DTubeService extends StreamingService {
     }
 
     @Override
-    public StreamExtractor getStreamExtractor(String url) {
-        return new DTubeStreamExtractor(this, url);
-    }
-
-    @Override
     public KioskList getKioskList() throws ExtractionException {
         KioskList.KioskExtractorFactory kioskFactory = new KioskList.KioskExtractorFactory() {
             @Override
             public KioskExtractor createNewKiosk(StreamingService streamingService, String url, String id) throws ExtractionException {
-                return new DTubeKioskExtractor(DTubeService.this, url, id);
+                return new DTubeKioskExtractor(
+                        DTubeService.this,
+                        new DTubeUrlIdHandler(false, false, true).setUrl(url),
+                        id
+                );
             }
         };
 
         KioskList list = new KioskList(getServiceId());
 
-        final DTubeUrlIdHandler h = DTubeUrlIdHandler.getKioskInstance();
+        final DTubeUrlIdHandler h = new DTubeUrlIdHandler(false, false, true);
+
         try {
             list.addKioskEntry(kioskFactory, h, DTubeKiosk.HOT.getId());
             list.addKioskEntry(kioskFactory, h, DTubeKiosk.TRENDING.getId());
@@ -106,13 +106,18 @@ public class DTubeService extends StreamingService {
     }
 
     @Override
-    public ChannelExtractor getChannelExtractor(String url) {
-        return new DTubeChannelExtractor(this, url);
+    public ChannelExtractor getChannelExtractor(ListUrlIdHandler urlIdHandler) throws ExtractionException {
+        return new DTubeChannelExtractor(this, urlIdHandler);
     }
 
     @Override
-    public PlaylistExtractor getPlaylistExtractor(String url) {
+    public PlaylistExtractor getPlaylistExtractor(ListUrlIdHandler urlIdHandler) throws ExtractionException {
         return null;
+    }
+
+    @Override
+    public StreamExtractor getStreamExtractor(UrlIdHandler urlIdHandler) throws ExtractionException {
+        return new DTubeStreamExtractor(this, urlIdHandler);
     }
 
     @Override

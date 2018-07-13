@@ -83,9 +83,4 @@ public class DTubeKioskExtractorTest {
         assertFalse("extractor has next streams", extractor.getPage(extractor.getNextPageUrl()) == null
                 || extractor.getPage(extractor.getNextPageUrl()).getItems().isEmpty());
     }
-
-    @Test
-    public void testGetCleanUrl() throws Exception {
-        assertEquals("https://d.tube/hotvideos", extractor.getCleanUrl());
-    }
 }

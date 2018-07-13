@@ -6,8 +6,8 @@ import org.schabi.newpipe.extractor.constants.Keys;
 import org.schabi.newpipe.extractor.constants.Words;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
-import org.schabi.newpipe.http.HttpDownloader;
-import org.schabi.newpipe.settings.model.settings.interfaces.Settings;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.stream.*;
 
 import javax.annotation.Nonnull;
@@ -30,8 +30,8 @@ public class DTubeStreamExtractor extends StreamExtractor {
         boolean is(long rshares);
     }
 
-    public DTubeStreamExtractor(StreamingService service, String url) {
-        super(service, url);
+    public DTubeStreamExtractor(StreamingService service, UrlIdHandler urlIdHandler) {
+        super(service, urlIdHandler);
     }
 
     @Nonnull
@@ -159,7 +159,7 @@ public class DTubeStreamExtractor extends StreamExtractor {
     @Override
     public String getUploaderUrl() throws ParsingException {
         assertPageFetched();
-        return getService().getChannelUrlIdHandler().getUrl(getUploaderName());
+        return getService().getChannelUrlIdHandler().getUrl();
     }
 
     @Nonnull
@@ -316,7 +316,7 @@ public class DTubeStreamExtractor extends StreamExtractor {
         DTubeParsingHelper.DTubeResultAndMeta resultAndMeta = DTubeParsingHelper.getResultAndMetaFromSteemitContent(
                 downloader,
                 Words.VIDEO,
-                urlHandler.getSteemitParams(getCleanUrl())
+                urlHandler.getSteemitParams()
         );
         meta = resultAndMeta.getMeta();
         result = resultAndMeta.getResult();
@@ -325,7 +325,7 @@ public class DTubeStreamExtractor extends StreamExtractor {
     @Nonnull
     @Override
     public String getId() throws ParsingException {
-        return getUrlIdHandler().getId(getCleanUrl());
+        return getUrlIdHandler().getId();
     }
 
     @Nonnull

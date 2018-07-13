@@ -24,20 +24,20 @@ public class DTubeKioskUrlIdHandlerTest {
 
     @Test
     public void getUrl() throws ParsingException {
-        assertEquals(urlIdHandler.getUrl("trendingvideos"), "https://d.tube/trendingvideos");
-        assertEquals(urlIdHandler.getUrl("hotvideos"), "https://d.tube/hotvideos");
-        assertEquals(urlIdHandler.getUrl("newvideos"), "https://d.tube/newvideos");
+        assertEquals(urlIdHandler.setId("trendingvideos").getUrl(), "https://d.tube/trendingvideos");
+        assertEquals(urlIdHandler.setId("hotvideos").getUrl(), "https://d.tube/hotvideos");
+        assertEquals(urlIdHandler.setId("newvideos").getUrl(), "https://d.tube/newvideos");
     }
 
     @Test
     public void getId() throws ParsingException {
-        assertEquals(urlIdHandler.getId("https://d.tube/#!/trendingvideos"), "trendingvideos");
-        assertEquals(urlIdHandler.getId("https://d.tube/#!/hotvideos"), "hotvideos");
-        assertEquals(urlIdHandler.getId("https://d.tube/#!/newvideos"), "newvideos");
+        assertEquals(urlIdHandler.setUrl("https://d.tube/#!/trendingvideos").getId(), "trendingvideos");
+        assertEquals(urlIdHandler.setUrl("https://d.tube/#!/hotvideos").getId(), "hotvideos");
+        assertEquals(urlIdHandler.setUrl("https://d.tube/#!/newvideos").getId(), "newvideos");
 
-        assertEquals(urlIdHandler.getId("https://d.tube/trendingvideos"), "trendingvideos");
-        assertEquals(urlIdHandler.getId("https://d.tube/hotvideos"), "hotvideos");
-        assertEquals(urlIdHandler.getId("https://d.tube/newvideos"), "newvideos");
+        assertEquals(urlIdHandler.setUrl("https://d.tube/trendingvideos").getId(), "trendingvideos");
+        assertEquals(urlIdHandler.setUrl("https://d.tube/hotvideos").getId(), "hotvideos");
+        assertEquals(urlIdHandler.setUrl("https://d.tube/newvideos").getId(), "newvideos");
     }
 
     @Test

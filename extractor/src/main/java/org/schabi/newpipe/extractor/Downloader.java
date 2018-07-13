@@ -1,5 +1,6 @@
 package org.schabi.newpipe.extractor;
 
+import com.github.FlorianSteenbuck.other.http.resp.headers.HttpHeadExecutionTyp;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 
 import java.io.IOException;

@@ -1,6 +1,7 @@
 package org.schabi.newpipe.extractor.services.dtube;
 
-import org.schabi.newpipe.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import org.schabi.newpipe.extractor.ListUrlIdHandler;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.UrlIdHandler;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
@@ -15,27 +16,25 @@ public class DTubeKioskExtractor extends KioskExtractor {
     private DTubeStreamInfoItemNavigator pageNavi;
     private DTubeKiosk kiosk;
 
-    public DTubeKioskExtractor(StreamingService streamingService, String url, String kioskId) throws ExtractionException {
+    public DTubeKioskExtractor(StreamingService streamingService, ListUrlIdHandler url, String kioskId) throws ExtractionException {
         super(streamingService, url, kioskId);
     }
 
     @Nonnull
     @Override
-    protected UrlIdHandler getUrlIdHandler() throws ParsingException {
+    protected UrlIdHandler getUrlIdHandler()  {
         return DTubeUrlIdHandler.getKioskInstance();
     }
 
     @Override
     public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
-        String url = getCleanUrl();
-        kiosk = DTubeKiosk.getKioskById(getUrlIdHandler().getId(url));
+        kiosk = DTubeKiosk.getKioskById(getUrlIdHandler().getId());
         pageNavi = new DTubeStreamInfoItemNavigator(
-                url,
                 12,
                 "dtube",
                 getService(),
                 new Object[]{"database_api", "get_discussions_by_"+kiosk.getBy()},
-                ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler())
+                ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler().setUrl(getOriginalUrl()))
         );
     }
 

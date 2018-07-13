@@ -48,12 +48,12 @@ public class DTubeChannelExtractorTest {
         }
 
         @Test
-        public void testCleanUrl() {
-            assertEquals("https://d.tube/c/sempervideo", extractor.getCleanUrl());
+        public void testUrl()  throws ParsingException {
+            assertEquals("https://d.tube/#!/c/sempervideo", extractor.getUrl());
         }
 
         @Test
-        public void testOriginalUrl() {
+        public void testOriginalUrl()  throws ParsingException {
             assertEquals("https://d.tube/#!/c/sempervideo", extractor.getOriginalUrl());
         }
 

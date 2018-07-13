@@ -7,7 +7,7 @@ import org.schabi.newpipe.extractor.*;
 import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
-import org.schabi.newpipe.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.stream.*;
 
 import javax.annotation.Nonnull;

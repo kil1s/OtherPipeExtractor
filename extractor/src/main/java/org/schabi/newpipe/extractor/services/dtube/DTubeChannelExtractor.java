@@ -3,9 +3,11 @@ package org.schabi.newpipe.extractor.services.dtube;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import org.schabi.newpipe.extractor.ListUrlIdHandler;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
+import org.schabi.newpipe.extractor.UrlIdHandler;
 import org.schabi.newpipe.extractor.channel.ChannelExtractor;
 import org.schabi.newpipe.extractor.constants.Words;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
@@ -24,8 +26,8 @@ public class DTubeChannelExtractor extends ChannelExtractor {
     protected JsonObject result;
     protected JsonObject meta;
 
-    public DTubeChannelExtractor(StreamingService service, String url) {
-        super(service, url);
+    public DTubeChannelExtractor(StreamingService service, ListUrlIdHandler urlIdHandler) {
+        super(service, urlIdHandler);
     }
 
     @Override
@@ -55,8 +57,6 @@ public class DTubeChannelExtractor extends ChannelExtractor {
             String response = dl.download(DTubeParsingHelper.STEEMIT_ENDPOINT, request);
             return JsonParser.object().from(response).getObject(Words.RESULT).getNumber("follower_count").longValue();
         } catch (IOException e) {
-            throw new ParsingException(e.getMessage(), e.getCause());
-        } catch (ReCaptchaException e) {
             throw new ParsingException(e.getMessage(), e.getCause());
         } catch (JsonParserException e) {
             throw new ParsingException(e.getMessage(), e.getCause());
@@ -93,7 +93,7 @@ public class DTubeChannelExtractor extends ChannelExtractor {
     @Override
     public void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException {
         DTubeUrlIdHandler urlHandler = (DTubeUrlIdHandler) getUrlIdHandler();
-        Object[] params = urlHandler.getSteemitParams(getCleanUrl());
+        Object[] params = urlHandler.getSteemitParams();
         DTubeParsingHelper.DTubeResultAndMeta resultAndMeta = DTubeParsingHelper.getResultAndMetaFromSteemitContent(
                 downloader,
                 "call",
@@ -103,19 +103,18 @@ public class DTubeChannelExtractor extends ChannelExtractor {
         meta = resultAndMeta.getMeta();
         result = resultAndMeta.getResult();
         pageNavi = new DTubeStreamInfoItemNavigator(
-                getCleanUrl(),
                 50,
-                urlHandler.getAuthor(getCleanUrl()),
+                urlHandler.getAuthor(),
                 getService(),
                 new Object[]{"database_api", "get_discussions_by_blog"},
-                ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler())
+                ((DTubeUrlIdHandler) getService().getStreamUrlIdHandler().setUrl(getOriginalUrl()))
         );
     }
 
     @Nonnull
     @Override
     public String getId() throws ParsingException {
-        return ((DTubeUrlIdHandler) getUrlIdHandler()).getAuthor(getCleanUrl());
+        return ((DTubeUrlIdHandler) getUrlIdHandler()).getAuthor();
     }
 
     @Nonnull

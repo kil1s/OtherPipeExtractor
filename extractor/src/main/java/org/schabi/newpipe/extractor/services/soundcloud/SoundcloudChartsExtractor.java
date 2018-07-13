@@ -1,6 +1,6 @@
 package org.schabi.newpipe.extractor.services.soundcloud;
 
-import org.schabi.newpipe.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.Downloader;
 import org.schabi.newpipe.extractor.ListUrlIdHandler;
 import org.schabi.newpipe.extractor.StreamingService;

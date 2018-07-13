@@ -1,8 +1,8 @@
 package org.schabi.newpipe;
 
-import org.schabi.newpipe.extractor.HttpHeadExecutionTyp;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.resp.headers.HttpHeadExecutionTyp;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
-import org.schabi.newpipe.http.HttpDownloader;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -47,7 +47,7 @@ public class Downloader implements HttpDownloader {
     private Downloader() {
     }
 
-    public static Downloader getInstance() {
+    public static HttpDownloader getInstance() {
         if (instance == null) {
             synchronized (Downloader.class) {
                 if (instance == null) {
@@ -67,7 +67,7 @@ public class Downloader implements HttpDownloader {
     }
 
     @Override
-    public String download(String siteUrl, String language, byte[] body) throws IOException, ReCaptchaException {
+    public String download(String siteUrl, String language, byte[] body) throws IOException {
         Map<String, String> requestProperties = new HashMap<>();
         requestProperties.put("Accept-Language", language);
         return download(siteUrl, requestProperties, body);
@@ -81,7 +81,7 @@ public class Downloader implements HttpDownloader {
      * @param language the language (usually a 2-character code) to set as the preferred language
      * @return the contents of the specified text file
      */
-    public String download(String siteUrl, String language) throws IOException, ReCaptchaException {
+    public String download(String siteUrl, String language) throws IOException {
         Map<String, String> requestProperties = new HashMap<>();
         requestProperties.put("Accept-Language", language);
         return download(siteUrl, requestProperties);
@@ -97,7 +97,7 @@ public class Downloader implements HttpDownloader {
      * @return the contents of the specified text file
      * @throws IOException
      */
-    public String download(String siteUrl, Map<String, String> customProperties) throws IOException, ReCaptchaException {
+    public String download(String siteUrl, Map<String, String> customProperties) throws IOException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         for (Map.Entry<String, String> pair: customProperties.entrySet()) {
@@ -116,7 +116,7 @@ public class Downloader implements HttpDownloader {
      * @return the contents of the specified text file
      * @throws IOException
      */
-    public String download(String siteUrl, Map<String, String> customProperties, byte[] body) throws IOException, ReCaptchaException {
+    public String download(String siteUrl, Map<String, String> customProperties, byte[] body) throws IOException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         setupConnection(con, "POST");
@@ -133,7 +133,7 @@ public class Downloader implements HttpDownloader {
     /**
      * Common functionality between download(String url) and download(String url, String language)
      */
-    private static Object[] downloadConAndString(HttpsURLConnection con, boolean setup) throws IOException, ReCaptchaException {
+    private static Object[] downloadConAndString(HttpsURLConnection con, boolean setup) throws IOException {
         StringBuilder response = new StringBuilder();
         BufferedReader in = null;
 
@@ -159,7 +159,9 @@ public class Downloader implements HttpDownloader {
              * See : https://github.com/rg3/youtube-dl/issues/5138
              */
             if (con.getResponseCode() == 429) {
-                throw new ReCaptchaException("reCaptcha Challenge requested");
+                // TODO pass a recaptcha handle trough the downloader to show it to the user
+                // TODO let the user decide if they want to show it or break it with rucaptcha
+                throw new IOException("reCaptcha Challenge requested");
             }
 
             throw new IOException(con.getResponseCode() + " " + con.getResponseMessage(), e);
@@ -188,7 +190,7 @@ public class Downloader implements HttpDownloader {
     /**
      * Common functionality between download(String url) and download(String url, String language)
      */
-    private static String dl(HttpsURLConnection con, boolean setup) throws IOException, ReCaptchaException {
+    private static String dl(HttpsURLConnection con, boolean setup) throws IOException {
         return (String) downloadConAndString(con, setup)[1];
     }
 
@@ -239,7 +241,7 @@ public class Downloader implements HttpDownloader {
         return con.getHeaderFields();
     }
 
-    private Map<String,List<String>> head(HttpsURLConnection con, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+    private Map<String,List<String>> head(HttpsURLConnection con, HttpHeadExecutionTyp...typs) throws IOException {
         IOException lastIOException = null;
         ReCaptchaException lastReCaptchaException = null;
 
@@ -283,7 +285,7 @@ public class Downloader implements HttpDownloader {
      * @param siteUrl the URL of the text file to download
      * @return the contents of the specified text file
      */
-    public String download(String siteUrl) throws IOException, ReCaptchaException {
+    public String download(String siteUrl) throws IOException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         //HttpsURLConnection con = NetCipher.getHttpsURLConnection(url);
@@ -291,7 +293,7 @@ public class Downloader implements HttpDownloader {
     }
 
     @Override
-    public String download(String siteUrl, byte[] body) throws IOException, ReCaptchaException {
+    public String download(String siteUrl, byte[] body) throws IOException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         setupConnection(con, "POST");
@@ -303,21 +305,21 @@ public class Downloader implements HttpDownloader {
     }
 
     @Override
-    public Map<String, List<String>> downloadHead(String siteUrl, String language, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+    public Map<String, List<String>> downloadHead(String siteUrl, String language, byte[] body, HttpHeadExecutionTyp...typs) throws IOException {
         Map<String, String> requestProperties = new HashMap<>();
         requestProperties.put("Accept-Language", language);
         return downloadHead(siteUrl, requestProperties, body, typs);
     }
 
     @Override
-    public Map<String, List<String>> downloadHead(String siteUrl, String language, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+    public Map<String, List<String>> downloadHead(String siteUrl, String language, HttpHeadExecutionTyp...typs) throws IOException {
         Map<String, String> requestProperties = new HashMap<>();
         requestProperties.put("Accept-Language", language);
         return downloadHead(siteUrl, requestProperties, typs);
     }
 
     @Override
-    public Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+    public Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, HttpHeadExecutionTyp...typs) throws IOException, {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         for (Map.Entry<String, String> pair: customProperties.entrySet()) {
@@ -327,7 +329,7 @@ public class Downloader implements HttpDownloader {
     }
 
     @Override
-    public Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+    public Map<String, List<String>> downloadHead(String siteUrl, Map<String, String> customProperties, byte[] body, HttpHeadExecutionTyp...typs) throws IOException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         for (Map.Entry<String, String> pair: customProperties.entrySet()) {
@@ -340,7 +342,7 @@ public class Downloader implements HttpDownloader {
     }
 
     @Override
-    public Map<String, List<String>> downloadHead(String siteUrl, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+    public Map<String, List<String>> downloadHead(String siteUrl, HttpHeadExecutionTyp...typs) throws IOException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         //HttpsURLConnection con = NetCipher.getHttpsURLConnection(url);
@@ -348,7 +350,7 @@ public class Downloader implements HttpDownloader {
     }
 
     @Override
-    public Map<String, List<String>> downloadHead(String siteUrl, byte[] body, HttpHeadExecutionTyp...typs) throws IOException, ReCaptchaException {
+    public Map<String, List<String>> downloadHead(String siteUrl, byte[] body, HttpHeadExecutionTyp...typs) throws IOException {
         URL url = new URL(siteUrl);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         OutputStream outputStream = con.getOutputStream();

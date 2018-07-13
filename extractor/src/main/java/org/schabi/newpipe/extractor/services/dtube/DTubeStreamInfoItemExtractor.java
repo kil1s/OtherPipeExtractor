@@ -84,7 +84,7 @@ public class DTubeStreamInfoItemExtractor implements StreamInfoItemExtractor {
 
     @Override
     public String getUploaderUrl() throws ParsingException {
-        return service.getChannelUrlIdHandler().getUrl(getUploaderName());
+        return service.getChannelUrlIdHandler().getUrl();
     }
 
     @Override
@@ -100,7 +100,7 @@ public class DTubeStreamInfoItemExtractor implements StreamInfoItemExtractor {
 
     @Override
     public String getUrl() throws ParsingException {
-        return service.getStreamUrlIdHandler().getUrl(getUploaderName()+"/"+getPermLink());
+        return service.getStreamUrlIdHandler().setId(getUploaderName()+"/"+getPermLink()).getUrl();
     }
 
     public String getPermLink() throws ParsingException {

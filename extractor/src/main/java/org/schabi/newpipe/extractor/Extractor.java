@@ -3,7 +3,7 @@ package org.schabi.newpipe.extractor;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
-import org.schabi.newpipe.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ public abstract class Extractor {
 
     @Nullable
     private boolean pageFetched = false;
-    private final Downloader downloader;
+    private final HttpDownloader downloader;
 
     public Extractor(final StreamingService service, final UrlIdHandler urlIdHandler) {
         if(service == null) throw new NullPointerException("service is null");
@@ -64,7 +64,7 @@ public abstract class Extractor {
      * @throws IOException if the page can not be loaded
      * @throws ExtractionException if the pages content is not understood
      */
-    public abstract void onFetchPage(@Nonnull Downloader downloader) throws IOException, ExtractionException;
+    public abstract void onFetchPage(@Nonnull HttpDownloader downloader) throws IOException, ExtractionException;
 
     @Nonnull
     public String getId() throws ParsingException {

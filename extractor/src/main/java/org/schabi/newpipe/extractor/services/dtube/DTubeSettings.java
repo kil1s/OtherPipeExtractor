@@ -4,18 +4,18 @@ import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.http.HttpDownloader;
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.constants.Encodings;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
-import org.schabi.newpipe.settings.exceptions.WrongSettingsDataException;
-import org.schabi.newpipe.settings.model.provider.StringListProvider;
-import org.schabi.newpipe.settings.model.settings.abstracts.OverrideDynamicSettings;
-import org.schabi.newpipe.url.helper.UrlParsingHelper;
-import org.schabi.newpipe.url.model.UrlParsingFeature;
-import org.schabi.newpipe.url.model.UrlQueryState;
-import org.schabi.newpipe.url.model.protocol.wellknown.WellKnownProtocolHelper;
-import org.schabi.newpipe.url.navigator.UrlNavigator;
+import com.github.FlorianSteenbuck.other.settings.exceptions.WrongSettingsDataException;
+import com.github.FlorianSteenbuck.other.settings.model.provider.StringListProvider;
+import com.github.FlorianSteenbuck.other.settings.model.settings.abstracts.OverrideDynamicSettings;
+import com.github.FlorianSteenbuck.other.url.helper.UrlParsingHelper;
+import com.github.FlorianSteenbuck.other.url.model.UrlParsingFeature;
+import com.github.FlorianSteenbuck.other.url.model.UrlQueryState;
+import com.github.FlorianSteenbuck.other.url.model.protocol.wellknown.WellKnownProtocolHelper;
+import com.github.FlorianSteenbuck.other.url.navigator.UrlNavigator;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -34,8 +34,6 @@ public class DTubeSettings extends OverrideDynamicSettings {
         try {
             refresh();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ReCaptchaException e) {
             e.printStackTrace();
         }
     }
@@ -64,7 +62,7 @@ public class DTubeSettings extends OverrideDynamicSettings {
     }
 
     @Override
-    public void refresh() throws IOException, ReCaptchaException {
+    public void refresh() throws IOException {
         HttpDownloader dl = NewPipe.getDownloader();
         String settings = dl.download(DTubeParsingHelper.DIRECT_FILES_ENDPOINT +"/settings.json");
         try {
