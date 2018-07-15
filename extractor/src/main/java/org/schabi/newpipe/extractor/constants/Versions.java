@@ -24,5 +24,5 @@
 package org.schabi.newpipe.extractor.constants;
 
 public class Versions {
-    public static final String SECOND_ONE_DOT = "2.0";
+    public static final String SECOND_ONE_DOT = "2"+Glues.DOT+"0";
 }

@@ -9,7 +9,7 @@ dependencies {
     implementation 'com.github.FlorianSteenbuck:OtherFeatures:j0.0.1'
     implementation 'com.github.FlorianSteenbuck:OtherUrl:dev-SNAPSHOT'
     implementation 'com.github.FlorianSteenbuck:OtherMap:dev-SNAPSHOT'
-    implementation 'com.github.FlorianSteenbuck:OtherSettings:-SNAPSHOT'
+    implementation 'com.github.FlorianSteenbuck:OtherSettings:master-SNAPSHOT'
     implementation 'com.github.FlorianSteenbuck:OtherHttp:master-SNAPSHOT'
 
     testImplementation 'junit:junit:4.12'

@@ -24,6 +24,6 @@
 package org.schabi.newpipe.extractor.constants;
 
 public class Keys {
-    public static final String ACTIVE_VOTES = "active_votes";
-    public static final String JSON_METADATA = "json_metadata";
+    public static final String ACTIVE_VOTES = Words.ACTIVE+Glues.UNDERSCORE+Words.VOTES;
+    public static final String JSON_METADATA = Words.JSON+Glues.UNDERSCORE+Words.METADATA;
 }

@@ -6,6 +6,7 @@ import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
 import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.NewPipe;
+import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.constants.Encodings;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 import com.github.FlorianSteenbuck.other.settings.exceptions.WrongSettingsDataException;
@@ -16,6 +17,7 @@ import com.github.FlorianSteenbuck.other.url.model.UrlParsingFeature;
 import com.github.FlorianSteenbuck.other.url.model.UrlQueryState;
 import com.github.FlorianSteenbuck.other.url.model.protocol.wellknown.WellKnownProtocolHelper;
 import com.github.FlorianSteenbuck.other.url.navigator.UrlNavigator;
+import org.schabi.newpipe.extractor.stream.Stream;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,7 +31,10 @@ public class DTubeSettings extends OverrideDynamicSettings {
     public static final String REMOTE = "remote";
     public static final String DISPLAY_NODES = "displayNodes";
 
-    public DTubeSettings() {
+    protected StreamingService service;
+
+    public DTubeSettings(StreamingService service) {
+        this.service = service;
         // TODO better error handling
         try {
             refresh();
@@ -96,5 +101,10 @@ public class DTubeSettings extends OverrideDynamicSettings {
         } catch (WrongSettingsDataException e) {
             throw new IOException("Settings are not in valid format", e);
         }
+    }
+
+    @Override
+    public int getId() {
+        return service.getServiceId();
     }
 }
