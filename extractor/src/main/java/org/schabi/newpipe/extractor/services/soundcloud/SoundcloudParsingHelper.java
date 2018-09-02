@@ -41,7 +41,7 @@ public class SoundcloudParsingHelper {
         Document doc = Jsoup.parse(response);
         Element jsElement = doc.select("script[src^=https://a-v2.sndcdn.com/assets/app]").first();
 
-        final String clientIdPattern = ",client_id:\"(.*?)\"";
+        final String clientIdPattern = ",clientId:\"(.*?)\"";
 
         try {
             final HashMap<String, String> headers = new HashMap<>();
@@ -82,7 +82,7 @@ public class SoundcloudParsingHelper {
     public static JsonObject resolveFor(HttpDownloader downloader, String url) throws IOException, ReCaptchaException, ParsingException {
         String apiUrl = "https://api.soundcloud.com/resolve"
                 + "?url=" + URLEncoder.encode(url, "UTF-8")
-                + "&client_id=" + clientId();
+                + "&clientId=" + clientId();
 
         try {
             return JsonParser.object().from(downloader.download(apiUrl));
@@ -159,7 +159,7 @@ public class SoundcloudParsingHelper {
         String nextPageUrl;
         try {
             nextPageUrl = responseObject.getString("next_href");
-            if (!nextPageUrl.contains("client_id=")) nextPageUrl += "&client_id=" + SoundcloudParsingHelper.clientId();
+            if (!nextPageUrl.contains("clientId=")) nextPageUrl += "&clientId=" + SoundcloudParsingHelper.clientId();
         } catch (Exception ignored) {
             nextPageUrl = "";
         }
@@ -210,7 +210,7 @@ public class SoundcloudParsingHelper {
         String nextPageUrl;
         try {
             nextPageUrl = responseObject.getString("next_href");
-            if (!nextPageUrl.contains("client_id=")) nextPageUrl += "&client_id=" + SoundcloudParsingHelper.clientId();
+            if (!nextPageUrl.contains("clientId=")) nextPageUrl += "&clientId=" + SoundcloudParsingHelper.clientId();
         } catch (Exception ignored) {
             nextPageUrl = "";
         }

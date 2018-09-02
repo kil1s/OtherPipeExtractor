@@ -2,9 +2,8 @@ package org.schabi.newpipe.extractor.services.soundcloud;
 
 import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.Downloader;
-import org.schabi.newpipe.extractor.ListUrlIdHandler;
+import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler;
 import org.schabi.newpipe.extractor.StreamingService;
-import org.schabi.newpipe.extractor.UrlIdHandler;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.kiosk.KioskExtractor;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
@@ -19,7 +18,7 @@ public class SoundcloudChartsExtractor extends KioskExtractor {
 	private StreamInfoItemsCollector collector = null;
 	private String nextPageUrl = null;
 
-    public SoundcloudChartsExtractor(StreamingService service, ListUrlIdHandler urlIdHandler, String kioskId) {
+    public SoundcloudChartsExtractor(StreamingService service, ListLinkHandler urlIdHandler, String kioskId) {
         super(service, urlIdHandler, kioskId);
     }
 
@@ -31,12 +30,6 @@ public class SoundcloudChartsExtractor extends KioskExtractor {
     @Override
     public String getName() {
         return getId();
-    }
-
-    @Nonnull
-    @Override
-    public UrlIdHandler getUrlIdHandler() {
-        return new SoundcloudChartsUrlIdHandler();
     }
 
     @Override
@@ -57,7 +50,7 @@ public class SoundcloudChartsExtractor extends KioskExtractor {
 
         String apiUrl = "https://api-v2.soundcloud.com/charts" +
                 "?genre=soundcloud:genres:all-music" +
-                "&client_id=" + SoundcloudParsingHelper.clientId();
+                "&clientId=" + SoundcloudParsingHelper.clientId();
 
         if (getId().equals("Top 50")) {
             apiUrl += "&kind=top";

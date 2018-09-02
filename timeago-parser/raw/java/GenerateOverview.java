@@ -18,7 +18,7 @@ public class GenerateOverview {
             }
         });
         for (String unitName : Arrays.asList("seconds", "minutes", "hours", "days", "weeks", "months", "years")) {
-            JsonObject object = JsonParser.object().from(new FileInputStream(new File("timeago-parser/raw/times/" + unitName + ".json")));
+            JsonObject object = JsonParser.object().from(new FileInputStream(new File("timeago-navigator/raw/times/" + unitName + ".json")));
 
             for (Map.Entry<String, Object> timeKeyValue : object.entrySet()) {
                 JsonObject timeObject = (JsonObject) timeKeyValue.getValue();
@@ -48,7 +48,7 @@ public class GenerateOverview {
             }
         }
 
-        writeMapTo(outMap, JsonWriter.indent("  ").on(new FileOutputStream(new File("timeago-parser/raw/overview.json"))));
+        writeMapTo(outMap, JsonWriter.indent("  ").on(new FileOutputStream(new File("timeago-navigator/raw/overview.json"))));
     }
 
     public static void writeMapTo(Map<String, Map<String, Collection<String>>> outMap, JsonAppendableWriter out) {

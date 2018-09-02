@@ -1,20 +1,15 @@
 package org.schabi.newpipe.extractor.services.youtube;
 
-import org.schabi.newpipe.extractor.ListUrlIdHandler;
-import org.schabi.newpipe.extractor.StreamingService;
-import org.schabi.newpipe.extractor.SuggestionExtractor;
-import org.schabi.newpipe.extractor.UrlIdHandler;
+import org.schabi.newpipe.extractor.*;
+import org.schabi.newpipe.extractor.linkhandler.*;
 import org.schabi.newpipe.extractor.channel.ChannelExtractor;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.kiosk.KioskExtractor;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
-import org.schabi.newpipe.extractor.search.SearchEngine;
+import org.schabi.newpipe.extractor.search.SearchExtractor;
 import org.schabi.newpipe.extractor.services.youtube.extractors.*;
-import org.schabi.newpipe.extractor.services.youtube.urlIdHandlers.YoutubeChannelUrlIdHandler;
-import org.schabi.newpipe.extractor.services.youtube.urlIdHandlers.YoutubePlaylistUrlIdHandler;
-import org.schabi.newpipe.extractor.services.youtube.urlIdHandlers.YoutubeStreamUrlIdHandler;
-import org.schabi.newpipe.extractor.services.youtube.urlIdHandlers.YoutubeTrendingUrlIdHandler;
+import org.schabi.newpipe.extractor.services.youtube.linkHandler.*;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
 import org.schabi.newpipe.extractor.subscription.SubscriptionExtractor;
 import com.github.FlorianSteenbuck.other.settings.model.settings.EmptySettings;
@@ -27,7 +22,7 @@ import static org.schabi.newpipe.extractor.StreamingService.ServiceInfo.MediaCap
 /*
  * Created by Christian Schabesberger on 23.08.15.
  *
- * Copyright (C) Christian Schabesberger 2015 <chris.schabesberger@mailbox.org>
+ * Copyright (C) Christian Schabesberger 2018 <chris.schabesberger@mailbox.org>
  * YoutubeService.java is part of NewPipe.
  *
  * NewPipe is free software: you can redistribute it and/or modify
@@ -47,41 +42,46 @@ import static org.schabi.newpipe.extractor.StreamingService.ServiceInfo.MediaCap
 public class YoutubeService extends StreamingService {
 
     public YoutubeService(int id) {
-        super(id, "YouTube", asList(AUDIO, VIDEO, LIVE));
+        super(id, "YouTube", asList(AUDIO, VIDEO, LIVE), supportedLocales);
     }
 
     @Override
-    public SearchEngine getSearchEngine() {
-        return new YoutubeSearchEngine(getServiceId());
+    public SearchExtractor getSearchExtractor(SearchQueryHandler query, String contentCountry) {
+        return new YoutubeSearchExtractor(this, query, contentCountry);
     }
 
     @Override
-    public UrlIdHandler getStreamUrlIdHandler() {
-        return YoutubeStreamUrlIdHandler.getInstance();
+    public LinkHandlerFactory getStreamUIHFactory() {
+        return YoutubeStreamLinkHandlerFactory.getInstance();
     }
 
     @Override
-    public ListUrlIdHandler getChannelUrlIdHandler() {
-        return YoutubeChannelUrlIdHandler.getInstance();
+    public ListLinkHandlerFactory getChannelUIHFactory() {
+        return YoutubeChannelLinkHandlerFactory.getInstance();
     }
 
     @Override
-    public ListUrlIdHandler getPlaylistUrlIdHandler() {
-        return YoutubePlaylistUrlIdHandler.getInstance();
+    public ListLinkHandlerFactory getPlaylistUIHFactory() {
+        return YoutubePlaylistLinkHandlerFactory.getInstance();
     }
 
     @Override
-    public StreamExtractor getStreamExtractor(UrlIdHandler urlIdHandler) throws ExtractionException {
-        return new YoutubeStreamExtractor(this, urlIdHandler);
+    public SearchQueryHandlerFactory getSearchQIHFactory() {
+        return YoutubeSearchQueryHandlerFactory.getInstance();
     }
 
     @Override
-    public ChannelExtractor getChannelExtractor(ListUrlIdHandler urlIdHandler) throws ExtractionException {
+    public StreamExtractor getStreamExtractor(LinkHandler linkHandler) throws ExtractionException {
+        return new YoutubeStreamExtractor(this, linkHandler);
+    }
+
+    @Override
+    public ChannelExtractor getChannelExtractor(ListLinkHandler urlIdHandler) throws ExtractionException {
         return new YoutubeChannelExtractor(this, urlIdHandler);
     }
 
     @Override
-    public PlaylistExtractor getPlaylistExtractor(ListUrlIdHandler urlIdHandler) throws ExtractionException {
+    public PlaylistExtractor getPlaylistExtractor(ListLinkHandler urlIdHandler) throws ExtractionException {
         return new YoutubePlaylistExtractor(this, urlIdHandler);
     }
 
@@ -101,9 +101,9 @@ public class YoutubeService extends StreamingService {
                 public KioskExtractor createNewKiosk(StreamingService streamingService, String url, String id)
                 throws ExtractionException {
                     return new YoutubeTrendingExtractor(YoutubeService.this,
-                            new YoutubeTrendingUrlIdHandler().setUrl(url), id);
+                            new YoutubeTrendingLinkHandlerFactory().fromUrl(url), id);
                 }
-            }, new YoutubeTrendingUrlIdHandler(), "Trending");
+            }, new YoutubeTrendingLinkHandlerFactory(), "Trending");
             list.setDefaultKiosk("Trending");
         } catch (Exception e) {
             throw new ExtractionException(e);

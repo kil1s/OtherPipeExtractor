@@ -5,20 +5,21 @@ import org.junit.Test;
 import org.schabi.newpipe.Downloader;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
+import org.schabi.newpipe.extractor.services.dtube.linkHandler.DTubeLinkHandlerFactory;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test for {@link DTubeUrlIdHandler} (Kiosk Instance)
+ * Test for {@link DTubeLinkHandlerFactory} (Kiosk Instance)
  */
 public class DTubeKioskUrlIdHandlerTest {
-    private static DTubeUrlIdHandler urlIdHandler;
+    private static DTubeLinkHandlerFactory urlIdHandler;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        urlIdHandler = DTubeUrlIdHandler.getKioskInstance();
+        urlIdHandler = DTubeLinkHandlerFactory.getKioskInstance();
         NewPipe.init(Downloader.getInstance());
     }
 

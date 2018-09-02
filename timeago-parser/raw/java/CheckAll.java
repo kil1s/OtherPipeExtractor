@@ -18,7 +18,7 @@ public class CheckAll {
         int YEARS = 12, currentYears = 0;
 
         for (String name : Arrays.asList("seconds", "minutes", "hours", "days", "weeks", "months", "years")) {
-            JsonObject object = JsonParser.object().from(new FileInputStream(new File("timeago-parser/raw/times/" + name + ".json")));
+            JsonObject object = JsonParser.object().from(new FileInputStream(new File("timeago-navigator/raw/times/" + name + ".json")));
 
             for (Map.Entry<String, Object> entry : object.entrySet()) {
                 JsonObject value = (JsonObject) entry.getValue();

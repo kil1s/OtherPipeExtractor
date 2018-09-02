@@ -6,14 +6,14 @@ import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
-import org.schabi.newpipe.extractor.search.SearchEngine;
 import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
+import org.schabi.newpipe.extractor.search.SearchExtractor;
+import org.schabi.newpipe.extractor.linkhandler.*;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
 import org.schabi.newpipe.extractor.subscription.SubscriptionExtractor;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class StreamingService {
     public static class ServiceInfo {
@@ -47,9 +47,14 @@ public abstract class StreamingService {
 
     private final int serviceId;
     private final ServiceInfo serviceInfo;
+    private final Map<Locale, Locale.DefinedLocal> supportedLocales;
 
-    public StreamingService(int id, String name, List<ServiceInfo.MediaCapability> capabilities) {
+    public StreamingService(int id, String name, List<ServiceInfo.MediaCapability> capabilities, Collection<Locale.DefinedLocal> supportedLocales) {
         this.serviceId = id;
+        this.supportedLocales = new HashMap<Locale, Locale.DefinedLocal>();
+        for (Locale.DefinedLocal local:supportedLocales) {
+            this.supportedLocales.put(local.getLocale(), local);
+        }
         this.serviceInfo = new ServiceInfo(name, capabilities);
     }
 
@@ -66,6 +71,10 @@ public abstract class StreamingService {
         return serviceId + ":" + serviceInfo.getName();
     }
 
+    public Map<Locale, Locale.DefinedLocal> getSupportedLocales() {
+        return supportedLocales;
+    }
+
     public abstract boolean isDynamicSettings();
     public abstract void refreshSettings() throws IOException, ReCaptchaException;
     public abstract Settings getSettings();
@@ -74,41 +83,50 @@ public abstract class StreamingService {
     ////////////////////////////////////////////
     // Url Id handler
     ////////////////////////////////////////////
-    public abstract UrlIdHandler getStreamUrlIdHandler();
-    public abstract ListUrlIdHandler getChannelUrlIdHandler();
-    public abstract ListUrlIdHandler getPlaylistUrlIdHandler();
+    public abstract LinkHandlerFactory getStreamUIHFactory();
+    public abstract ListLinkHandlerFactory getChannelUIHFactory();
+    public abstract ListLinkHandlerFactory getPlaylistUIHFactory();
+    public abstract SearchQueryHandlerFactory getSearchQIHFactory();
 
 
     ////////////////////////////////////////////
     // Extractor
     ////////////////////////////////////////////
-    public abstract SearchEngine getSearchEngine();
+    public abstract SearchExtractor getSearchExtractor(SearchQueryHandler queryHandler, String contentCountry);
     public abstract SuggestionExtractor getSuggestionExtractor();
     public abstract SubscriptionExtractor getSubscriptionExtractor();
     public abstract KioskList getKioskList() throws ExtractionException;
 
-    public abstract ChannelExtractor getChannelExtractor(ListUrlIdHandler urlIdHandler) throws ExtractionException;
-    public abstract PlaylistExtractor getPlaylistExtractor(ListUrlIdHandler urlIdHandler) throws ExtractionException;
-    public abstract StreamExtractor getStreamExtractor(UrlIdHandler urlIdHandler) throws ExtractionException;
+    public abstract ChannelExtractor getChannelExtractor(ListLinkHandler urlIdHandler) throws ExtractionException;
+    public abstract PlaylistExtractor getPlaylistExtractor(ListLinkHandler urlIdHandler) throws ExtractionException;
+    public abstract StreamExtractor getStreamExtractor(LinkHandler UIHFactory) throws ExtractionException;
 
-    public ChannelExtractor getChannelExtractor(String id, String[] contentFilter, String sortFilter) throws ExtractionException {
-        return getChannelExtractor(getChannelUrlIdHandler().setQuery(id, contentFilter, sortFilter));
+    public SearchExtractor getSearchExtractor(String query, List<String> contentFilter, String sortFilter, String contentCountry) throws ExtractionException {
+        return getSearchExtractor(getSearchQIHFactory().fromQuery(query, contentFilter, sortFilter), contentCountry);
     }
 
-    public PlaylistExtractor getPlaylistExtractor(String id, String[] contentFilter, String sortFilter) throws ExtractionException {
-        return getPlaylistExtractor(getPlaylistUrlIdHandler().setQuery(id, contentFilter, sortFilter));
+    public ChannelExtractor getChannelExtractor(String id, List<String> contentFilter, String sortFilter) throws ExtractionException {
+        return getChannelExtractor(getChannelUIHFactory().fromQuery(id, contentFilter, sortFilter));
+    }
+
+    public PlaylistExtractor getPlaylistExtractor(String id, List<String> contentFilter, String sortFilter) throws ExtractionException {
+        return getPlaylistExtractor(getPlaylistUIHFactory().fromQuery(id, contentFilter, sortFilter));
+    }
+
+    public SearchExtractor getSearchExtractor(String query, String contentCountry) throws ExtractionException {
+        return getSearchExtractor(getSearchQIHFactory().fromQuery(query), contentCountry);
     }
 
     public ChannelExtractor getChannelExtractor(String url) throws ExtractionException {
-        return getChannelExtractor(getChannelUrlIdHandler().setUrl(url));
+        return getChannelExtractor(getChannelUIHFactory().fromUrl(url));
     }
 
     public PlaylistExtractor getPlaylistExtractor(String url) throws ExtractionException {
-        return getPlaylistExtractor(getPlaylistUrlIdHandler().setUrl(url));
+        return getPlaylistExtractor(getPlaylistUIHFactory().fromUrl(url));
     }
 
     public StreamExtractor getStreamExtractor(String url) throws ExtractionException {
-        return getStreamExtractor(getStreamUrlIdHandler().setUrl(url));
+        return getStreamExtractor(getStreamUIHFactory().fromUrl(url));
     }
 
 
@@ -117,9 +135,9 @@ public abstract class StreamingService {
      * figure out where the link is pointing to (a channel, video, playlist, etc.)
      */
     public final LinkType getLinkTypeByUrl(String url) throws ParsingException {
-        UrlIdHandler sH = getStreamUrlIdHandler();
-        UrlIdHandler cH = getChannelUrlIdHandler();
-        UrlIdHandler pH = getPlaylistUrlIdHandler();
+        LinkHandlerFactory sH = getStreamUIHFactory();
+        LinkHandlerFactory cH = getChannelUIHFactory();
+        LinkHandlerFactory pH = getPlaylistUIHFactory();
 
         if (sH.acceptUrl(url)) {
             return LinkType.STREAM;

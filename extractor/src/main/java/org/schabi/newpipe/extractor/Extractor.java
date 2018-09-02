@@ -1,9 +1,9 @@
 package org.schabi.newpipe.extractor;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import org.schabi.newpipe.extractor.linkhandler.LinkHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,27 +16,27 @@ public abstract class Extractor {
      */
     private final StreamingService service;
 
-    private final UrlIdHandler urlIdHandler;
+    private final LinkHandler uIHandler;
 
     @Nullable
     private boolean pageFetched = false;
     private final HttpDownloader downloader;
 
-    public Extractor(final StreamingService service, final UrlIdHandler urlIdHandler) {
+    public Extractor(final StreamingService service, final LinkHandler uIHandler) {
         if(service == null) throw new NullPointerException("service is null");
-        if(urlIdHandler == null) throw new NullPointerException("UrlIdHandler is null");
+        if(uIHandler == null) throw new NullPointerException("LinkHandler is null");
         this.service = service;
-        this.urlIdHandler = urlIdHandler;
+        this.uIHandler = uIHandler;
         this.downloader = NewPipe.getDownloader();
         if(downloader == null) throw new NullPointerException("downloader is null");
     }
 
     /**
-     * @return The {@link UrlIdHandler} of the current extractor object (e.g. a ChannelExtractor should return a channel url handler).
+     * @return The {@link LinkHandler} of the current extractor object (e.g. a ChannelExtractor should return a channel url handler).
      */
     @Nonnull
-    protected  UrlIdHandler getUrlIdHandler() {
-        return urlIdHandler;
+    public LinkHandler getUIHandler() {
+        return uIHandler;
     }
 
     /**
@@ -68,7 +68,7 @@ public abstract class Extractor {
 
     @Nonnull
     public String getId() throws ParsingException {
-        return urlIdHandler.getId();
+        return uIHandler.getId();
     }
 
     /**
@@ -81,12 +81,12 @@ public abstract class Extractor {
 
     @Nonnull
     public String getOriginalUrl() throws ParsingException {
-        return urlIdHandler.getOriginalUrl();
+        return uIHandler.getOriginalUrl();
     }
 
     @Nonnull
     public String getUrl() throws ParsingException {
-        return urlIdHandler.getUrl();
+        return uIHandler.getUrl();
     }
 
     @Nonnull
@@ -96,5 +96,9 @@ public abstract class Extractor {
 
     public int getServiceId() {
         return service.getServiceId();
+    }
+
+    public HttpDownloader getDownloader() {
+        return downloader;
     }
 }

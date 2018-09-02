@@ -32,6 +32,7 @@ public class DTubeSettings extends OverrideDynamicSettings {
     public static final String DISPLAY_NODES = "displayNodes";
 
     protected StreamingService service;
+    protected int id;
 
     public DTubeSettings(StreamingService service) {
         this.service = service;

@@ -16,10 +16,10 @@ import static org.schabi.newpipe.extractor.timeago.TimeAgoPatternsManager.RESOUR
 public class GenerateResourceBundles {
 
     public static void main(String[] args) throws Exception {
-        File outDir = new File("timeago-parser/outBundle");
+        File outDir = new File("timeago-navigator/outBundle");
         if (!outDir.isDirectory()) outDir.mkdir();
 
-        JsonObject object = JsonParser.object().from(new FileInputStream(new File("timeago-parser/raw/unique_patterns.json")));
+        JsonObject object = JsonParser.object().from(new FileInputStream(new File("timeago-navigator/raw/unique_patterns.json")));
 
         for (Map.Entry<String, Object> langTimeEntry : new TreeMap<>(object).entrySet()) {
             final String langName = langTimeEntry.getKey();

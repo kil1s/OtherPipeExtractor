@@ -8,6 +8,7 @@ import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import org.schabi.newpipe.extractor.linkhandler.LinkHandler;
 import org.schabi.newpipe.extractor.stream.*;
 
 import javax.annotation.Nonnull;
@@ -18,13 +19,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.schabi.newpipe.extractor.utils.Utils.replaceHttpWithHttps;
-
 public class SoundcloudStreamExtractor extends StreamExtractor {
     private JsonObject track;
 
-    public SoundcloudStreamExtractor(StreamingService service, UrlIdHandler urlIdHandler) {
-        super(service, urlIdHandler);
+    public SoundcloudStreamExtractor(StreamingService service, LinkHandler uIHandler) {
+        super(service, uIHandler);
     }
 
     @Override
@@ -133,7 +132,7 @@ public class SoundcloudStreamExtractor extends StreamExtractor {
         HttpDownloader dl = NewPipe.getDownloader();
 
         String apiUrl = "https://api.soundcloud.com/i1/tracks/" + urlEncode(getId()) + "/streams"
-                + "?client_id=" + urlEncode(SoundcloudParsingHelper.clientId());
+                + "?clientId=" + urlEncode(SoundcloudParsingHelper.clientId());
 
         String response = dl.download(apiUrl);
         JsonObject responseObject;
@@ -198,20 +197,10 @@ public class SoundcloudStreamExtractor extends StreamExtractor {
         StreamInfoItemsCollector collector = new StreamInfoItemsCollector(getServiceId());
 
         String apiUrl = "https://api-v2.soundcloud.com/tracks/" + urlEncode(getId()) + "/related"
-                + "?client_id=" + urlEncode(SoundcloudParsingHelper.clientId());
+                + "?clientId=" + urlEncode(SoundcloudParsingHelper.clientId());
 
         SoundcloudParsingHelper.getStreamsFromApi(collector, apiUrl);
         return collector;
-    }
-
-    @Override
-    public String[] getDonationLinks() {
-        return new String[0];
-    }
-
-    @Override
-    public String[] getAffiliateLinks() {
-        return new String[0];
     }
 
     @Override

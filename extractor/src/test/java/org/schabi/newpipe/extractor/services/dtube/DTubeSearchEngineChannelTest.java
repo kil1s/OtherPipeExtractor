@@ -6,8 +6,6 @@ import org.junit.Test;
 import org.schabi.newpipe.Downloader;
 import org.schabi.newpipe.extractor.InfoItem;
 import org.schabi.newpipe.extractor.NewPipe;
-import org.schabi.newpipe.extractor.search.SearchEngine;
-import org.schabi.newpipe.extractor.services.soundcloud.BaseSoundcloudSearchTest;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 
 import static org.junit.Assert.assertEquals;
@@ -17,6 +15,7 @@ import static org.schabi.newpipe.extractor.ServiceList.DTube;
 /**
  * Test for {@link SearchEngine}
  */
+/*
 public class DTubeSearchEngineChannelTest extends BaseDTubeSearchTest {
 
     @BeforeClass
@@ -43,4 +42,4 @@ public class DTubeSearchEngineChannelTest extends BaseDTubeSearchTest {
         //TODO write a real test
         assertTrue(result.suggestion != null);
     }
-}
+}*/

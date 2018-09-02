@@ -31,13 +31,13 @@ public class SoundcloudSubscriptionExtractor extends SubscriptionExtractor {
 
         String id;
         try {
-            id = service.getChannelUrlIdHandler().setUrl(getUrlFrom(channelUrl)).getId();
+            id = service.getChannelUIHFactory().fromUrl(getUrlFrom(channelUrl)).getId();
         } catch (ExtractionException e) {
             throw new InvalidSourceException(e);
         }
 
         String apiUrl = "https://api.soundcloud.com/users/" + id + "/followings"
-                + "?client_id=" + SoundcloudParsingHelper.clientId()
+                + "?clientId=" + SoundcloudParsingHelper.clientId()
                 + "&limit=200";
         ChannelInfoItemsCollector collector = new ChannelInfoItemsCollector(service.getServiceId());
         // ± 2000 is the limit of followings on SoundCloud, so this minimum should be enough
