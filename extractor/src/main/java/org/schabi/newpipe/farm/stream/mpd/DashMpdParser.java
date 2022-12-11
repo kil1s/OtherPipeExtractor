@@ -1,14 +1,14 @@
-package org.schabi.newpipe.extractor.utils;
+package org.schabi.newpipe.farm.stream.mpd;
 
 import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.MediaFormat;
-import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 import org.schabi.newpipe.extractor.stream.AudioStream;
 import org.schabi.newpipe.extractor.stream.Stream;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.VideoStream;
+import org.schabi.newpipe.extractor.utils.ItagItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -42,7 +42,7 @@ import java.io.InputStream;
 public class DashMpdParser {
     private HttpDownloader downloader;
 
-    private DashMpdParser(HttpDownloader downloader) {
+    public DashMpdParser(HttpDownloader downloader) {
         this.downloader = downloader;
     }
 
