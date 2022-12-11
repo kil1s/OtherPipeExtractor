@@ -1,4 +1,4 @@
-package org.schabi.newpipe.extractor;
+package org.schabi.newpipe.extractor.list;
 
 import com.github.FlorianSteenbuck.other.settings.exceptions.SettingException;
 import com.github.FlorianSteenbuck.other.settings.exceptions.UnsupportedSettingValueException;
@@ -11,9 +11,6 @@ import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
-import org.schabi.newpipe.extractor.services.dtube.DTubeService;
-import org.schabi.newpipe.extractor.services.soundcloud.SoundcloudService;
-import org.schabi.newpipe.extractor.services.youtube.YoutubeService;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
@@ -24,6 +21,8 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 
+import org.schabi.newpipe.extractor.StreamingService;
+
 /**
  * A list of supported services.
  */
@@ -31,7 +30,7 @@ public final class ServiceList {
     private static final int VERSION = 2;
 
     private ServiceList() {
-        //no instance
+        // Bastard
     }
 
     protected static class CanNotFindStreamingServiceClass extends Exception {

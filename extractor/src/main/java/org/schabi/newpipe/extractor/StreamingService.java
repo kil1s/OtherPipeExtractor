@@ -15,8 +15,8 @@ import org.schabi.newpipe.extractor.subscription.SubscriptionExtractor;
 import java.io.IOException;
 import java.util.*;
 
-public abstract class StreamingService {
-    public static class ServiceInfo {
+public abstract class UnconfiguredStreamingService {
+    public static /* sad :-( */ class ServiceInfo {
         private final String name;
         private final List<MediaCapability> mediaCapabilities;
 
@@ -47,14 +47,16 @@ public abstract class StreamingService {
 
     private final int serviceId;
     private final ServiceInfo serviceInfo;
-    private final Map<Locale, Locale.DefinedLocal> supportedLocales;
+    private final Collection<Language> languages;
 
-    public StreamingService(int id, String name, List<ServiceInfo.MediaCapability> capabilities, Collection<Locale.DefinedLocal> supportedLocales) {
+    public UnconfiguredStreamingService(
+        int id,
+        String name,
+        List<ServiceInfo.MediaCapability> capabilities,
+        Collection<Language> languages
+    ) {
         this.serviceId = id;
-        this.supportedLocales = new HashMap<Locale, Locale.DefinedLocal>();
-        for (Locale.DefinedLocal local:supportedLocales) {
-            this.supportedLocales.put(local.getLocale(), local);
-        }
+        this.languages = languages;
         this.serviceInfo = new ServiceInfo(name, capabilities);
     }
 
@@ -71,8 +73,9 @@ public abstract class StreamingService {
         return serviceId + ":" + serviceInfo.getName();
     }
 
-    public Map<Locale, Locale.DefinedLocal> getSupportedLocales() {
-        return supportedLocales;
+    public
+    public Collection<Language> getLanguages() {
+        return languages;
     }
 
     public abstract boolean isDynamicSettings();

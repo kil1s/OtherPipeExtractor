@@ -5,7 +5,6 @@ import org.schabi.newpipe.extractor.MediaFormat;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
-import org.schabi.newpipe.extractor.services.youtube.ItagItem;
 import org.schabi.newpipe.extractor.stream.AudioStream;
 import org.schabi.newpipe.extractor.stream.Stream;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
@@ -41,11 +40,13 @@ import java.io.InputStream;
  */
 
 public class DashMpdParser {
+    private HttpDownloader downloader;
 
-    private DashMpdParser() {
+    private DashMpdParser(HttpDownloader downloader) {
+        this.downloader = downloader;
     }
 
-    public static class DashMpdParsingException extends ParsingException {
+    public static /* sad :-) */ class DashMpdParsingException extends ParsingException {
         DashMpdParsingException(String message, Exception e) {
             super(message, e);
         }
@@ -60,9 +61,8 @@ public class DashMpdParser {
      *
      * @param streamInfo where the parsed streams will be added
      */
-    public static void getStreams(StreamInfo streamInfo) throws DashMpdParsingException, ReCaptchaException {
+    public void getStreams(StreamInfo streamInfo) throws DashMpdParsingException, ReCaptchaException {
         String dashDoc;
-        HttpDownloader downloader = NewPipe.getDownloader();
         try {
             dashDoc = downloader.download(streamInfo.getDashMpdUrl());
         } catch (IOException ioe) {
