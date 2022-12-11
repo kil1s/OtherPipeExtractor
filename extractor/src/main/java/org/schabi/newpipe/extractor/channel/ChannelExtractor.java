@@ -1,5 +1,7 @@
 package org.schabi.newpipe.extractor.channel;
 
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+
 import org.schabi.newpipe.extractor.ListExtractor;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
@@ -28,8 +30,8 @@ import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler;
 
 public abstract class ChannelExtractor extends ListExtractor<StreamInfoItem> {
 
-    public ChannelExtractor(StreamingService service, ListLinkHandler urlIdHandler) {
-        super(service, urlIdHandler);
+    public ChannelExtractor(HttpDownloader downloader, StreamingService service, ListLinkHandler urlIdHandler) {
+        super(downloader, service, urlIdHandler);
     }
 
     public abstract String getAvatarUrl() throws ParsingException;

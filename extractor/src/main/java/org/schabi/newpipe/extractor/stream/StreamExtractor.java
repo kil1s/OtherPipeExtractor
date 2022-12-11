@@ -20,6 +20,8 @@ package org.schabi.newpipe.extractor.stream;
  * along with NewPipe.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+
 import org.schabi.newpipe.extractor.Extractor;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.Subtitles;
@@ -39,8 +41,8 @@ public abstract class StreamExtractor extends Extractor {
 
     public static final int NO_AGE_LIMIT = 0;
 
-    public StreamExtractor(StreamingService service, LinkHandler linkHandler) {
-        super(service, linkHandler);
+    public StreamExtractor(HttpDownloader downloader, StreamingService service, LinkHandler linkHandler) {
+        super(downloader, service, linkHandler);
     }
 
     @Nonnull

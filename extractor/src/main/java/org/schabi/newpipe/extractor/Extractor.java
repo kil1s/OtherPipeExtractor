@@ -15,20 +15,19 @@ public abstract class Extractor {
      * Useful for getting other things from a service (like the url handlers for cleaning/accepting/get id from urls).
      */
     private final StreamingService service;
-
     private final LinkHandler uIHandler;
+    private final HttpDownloader downloader;
 
     @Nullable
     private boolean pageFetched = false;
-    private final HttpDownloader downloader;
 
-    public Extractor(final StreamingService service, final LinkHandler uIHandler) {
+    public Extractor(final HttpDownloader downloader, final StreamingService service, final LinkHandler uIHandler) {
         if(service == null) throw new NullPointerException("service is null");
         if(uIHandler == null) throw new NullPointerException("LinkHandler is null");
+        if(downloader == null) throw new NullPointerException("downloader is null");
         this.service = service;
         this.uIHandler = uIHandler;
-        this.downloader = NewPipe.getDownloader();
-        if(downloader == null) throw new NullPointerException("downloader is null");
+        this.downloader = downloader;
     }
 
     /**

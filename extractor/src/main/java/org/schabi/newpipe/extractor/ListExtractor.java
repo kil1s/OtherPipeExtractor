@@ -1,5 +1,7 @@
 package org.schabi.newpipe.extractor;
 
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler;
 
@@ -13,8 +15,8 @@ import java.util.List;
  */
 public abstract class ListExtractor<R extends InfoItem> extends Extractor {
 
-    public ListExtractor(StreamingService service, ListLinkHandler uiHandler) {
-        super(service, uiHandler);
+    public ListExtractor(HttpDownloader downloader, StreamingService service, ListLinkHandler uiHandler) {
+        super(downloader, service, uiHandler);
     }
 
     /**

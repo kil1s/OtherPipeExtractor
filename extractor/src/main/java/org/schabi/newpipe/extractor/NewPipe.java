@@ -22,16 +22,20 @@ package org.schabi.newpipe.extractor;
 
 import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
+import org.schabi.newpipe.extractor.manage.ServiceManager;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Provides access to streaming services supported by NewPipe.
  */
-public class NewPipe {
-    private static HttpDownloader downloader = null;
+public class NewPipe/* Tracker */ {
+    private HttpDownloader downloader = null;
+    private ServiceManager manager;
 
-    private NewPipe() {
+    private NewPipe(ServiceManager manager, HttpDownloader downloader) {
+        this.manager = manager;
+        this.downloader = downloader;
     }
 
     public static void init(HttpDownloader d) {
@@ -42,16 +46,16 @@ public class NewPipe {
         return downloader;
     }
 
-    /*//////////////////////////////////////////////////////////////////////////
-    // Utils
-    //////////////////////////////////////////////////////////////////////////*/
-
-    public static List<StreamingService> getServices() {
-        return ServiceList.all();
+    public HttpDownloader getDownloader() {
+        return downloader;
     }
 
-    public static StreamingService getService(int serviceId) throws ExtractionException {
-        for (StreamingService service : ServiceList.all()) {
+    public Collection<StreamingService> getServices() {
+        return manager.all();
+    }
+
+    public StreamingService getService(int serviceId) throws ExtractionException {
+        for (StreamingService service : manager.all()) {
             if (service.getServiceId() == serviceId) {
                 return service;
             }
@@ -59,8 +63,8 @@ public class NewPipe {
         throw new ExtractionException("There's no service with the id = \"" + serviceId + "\"");
     }
 
-    public static StreamingService getService(String serviceName) throws ExtractionException {
-        for (StreamingService service : ServiceList.all()) {
+    public StreamingService getService(String serviceName) throws ExtractionException {
+        for (StreamingService service : manager.all()) {
             if (service.getServiceInfo().getName().equals(serviceName)) {
                 return service;
             }
@@ -68,8 +72,8 @@ public class NewPipe {
         throw new ExtractionException("There's no service with the name = \"" + serviceName + "\"");
     }
 
-    public static StreamingService getServiceByUrl(String url) throws ExtractionException {
-        for (StreamingService service : ServiceList.all()) {
+    public StreamingService getServiceByUrl(String url) throws ExtractionException {
+        for (StreamingService service : manager.all()) {
             if (service.getLinkTypeByUrl(url) != StreamingService.LinkType.NONE) {
                 return service;
             }
@@ -77,18 +81,16 @@ public class NewPipe {
         throw new ExtractionException("No service can handle the url = \"" + url + "\"");
     }
 
-    public static int getIdOfService(String serviceName) {
+    public int getIdOfService(String serviceName) {
         try {
-            //noinspection ConstantConditions
             return getService(serviceName).getServiceId();
         } catch (ExtractionException ignored) {
             return -1;
         }
     }
 
-    public static String getNameOfService(int id) {
+    public String getNameOfService(int id) {
         try {
-            //noinspection ConstantConditions
             return getService(id).getServiceInfo().getName();
         } catch (Exception e) {
             System.err.println("Service id not known");

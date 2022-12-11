@@ -1,10 +1,10 @@
-package org.schabi.newpipe.extractor.services.youtube;
+package org.schabi.newpipe.extractor.utils;
 
 import org.schabi.newpipe.extractor.MediaFormat;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 
 import static org.schabi.newpipe.extractor.MediaFormat.*;
-import static org.schabi.newpipe.extractor.services.youtube.ItagItem.ItagType.*;
+import static org.schabi.newpipe.extractor.utils.ItagItem.ItagType.*;
 
 public class ItagItem {
     /**

@@ -1,5 +1,7 @@
 package org.schabi.newpipe.extractor.search;
 
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+
 import org.schabi.newpipe.extractor.InfoItem;
 import org.schabi.newpipe.extractor.ListExtractor;
 import org.schabi.newpipe.extractor.StreamingService;
@@ -18,8 +20,8 @@ public abstract class SearchExtractor extends ListExtractor<InfoItem> {
     private final InfoItemsSearchCollector collector;
     private final String contentCountry;
 
-    public SearchExtractor(StreamingService service, SearchQueryHandler urlIdHandler, String contentCountry) {
-        super(service, urlIdHandler);
+    public SearchExtractor(HttpDownloader downloader, StreamingService service, SearchQueryHandler urlIdHandler, String contentCountry) {
+        super(downloader, service, urlIdHandler);
         collector = new InfoItemsSearchCollector(service.getServiceId());
         this.contentCountry = contentCountry;
     }

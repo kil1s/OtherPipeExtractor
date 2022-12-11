@@ -6,16 +6,19 @@ import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.kiosk.KioskList;
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
+
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
 import org.schabi.newpipe.extractor.search.SearchExtractor;
 import org.schabi.newpipe.extractor.linkhandler.*;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
 import org.schabi.newpipe.extractor.subscription.SubscriptionExtractor;
+import org.schabi.newpipe.model.Language;
 
 import java.io.IOException;
 import java.util.*;
 
-public abstract class UnconfiguredStreamingService {
+public abstract class StreamingService {
     public static /* sad :-( */ class ServiceInfo {
         private final String name;
         private final List<MediaCapability> mediaCapabilities;
@@ -48,16 +51,23 @@ public abstract class UnconfiguredStreamingService {
     private final int serviceId;
     private final ServiceInfo serviceInfo;
     private final Collection<Language> languages;
+    private HttpDownloader downloader;
 
-    public UnconfiguredStreamingService(
+    public StreamingService(
         int id,
         String name,
         List<ServiceInfo.MediaCapability> capabilities,
-        Collection<Language> languages
+        Collection<Language> languages,
+        HttpDownloader downloader
     ) {
         this.serviceId = id;
         this.languages = languages;
+        this.downloader = downloader;
         this.serviceInfo = new ServiceInfo(name, capabilities);
+    }
+
+    public HttpDownloader getDownloader() {
+        return downloader;
     }
 
     public final int getServiceId() {
@@ -73,7 +83,7 @@ public abstract class UnconfiguredStreamingService {
         return serviceId + ":" + serviceInfo.getName();
     }
 
-    public
+    abstract public void setLanguage(Language language);
     public Collection<Language> getLanguages() {
         return languages;
     }
