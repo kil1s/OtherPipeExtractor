@@ -1,13 +1,8 @@
 package org.schabi.newpipe.extractor.stream;
 
 import org.schabi.newpipe.extractor.*;
-import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
-import org.schabi.newpipe.extractor.utils.DashMpdParser;
-import org.schabi.newpipe.extractor.utils.ExtractorHelper;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -34,7 +29,6 @@ import java.util.List;
  * Info object for opened videos, ie the video ready to play.
  */
 public class StreamInfo extends Info {
-
     public static class StreamExtractException extends ExtractionException {
         StreamExtractException(String message) {
             super(message);
@@ -45,206 +39,6 @@ public class StreamInfo extends Info {
         super(serviceId, id, url, originalUrl, name);
         this.streamType = streamType;
         this.ageLimit = ageLimit;
-    }
-
-    public static StreamInfo getInfo(String url) throws IOException, ExtractionException {
-        return getInfo(NewPipe.getServiceByUrl(url), url);
-    }
-
-    public static StreamInfo getInfo(StreamingService service, String url) throws IOException, ExtractionException {
-        return getInfo(service.getStreamExtractor(url));
-    }
-
-    private static StreamInfo getInfo(StreamExtractor extractor) throws ExtractionException, IOException {
-        extractor.fetchPage();
-        StreamInfo streamInfo;
-        try {
-            streamInfo = extractImportantData(extractor);
-            streamInfo = extractStreams(streamInfo, extractor);
-            streamInfo = extractOptionalData(streamInfo, extractor);
-        } catch (ExtractionException e) {
-            // Currently YouTube does not distinguish between age restricted videos and videos blocked
-            // by country.  This means that during the initialisation of the extractor, the extractor
-            // will assume that a video is age restricted while in reality it it blocked by country.
-            //
-            // We will now detect whether the video is blocked by country or not.
-            String errorMsg = extractor.getErrorMessage();
-
-            if (errorMsg != null) {
-                throw new ContentNotAvailableException(errorMsg);
-            } else {
-                throw e;
-            }
-        }
-
-        return streamInfo;
-    }
-
-    private static StreamInfo extractImportantData(StreamExtractor extractor) throws ExtractionException {
-        /* ---- important data, without the video can't be displayed goes here: ---- */
-        // if one of these is not available an exception is meant to be thrown directly into the frontend.
-
-        int serviceId = extractor.getServiceId();
-        String url = extractor.getUrl();
-        String originalUrl = extractor.getOriginalUrl();
-        StreamType streamType = extractor.getStreamType();
-        String id = extractor.getId();
-        String name = extractor.getName();
-        int ageLimit = extractor.getAgeLimit();
-
-        if ((streamType == StreamType.NONE)
-                || (url == null || url.isEmpty())
-                || (id == null || id.isEmpty())
-                || (name == null /* streamInfo.title can be empty of course */)
-                || (ageLimit == -1)) {
-            throw new ExtractionException("Some important stream information was not given.");
-        }
-
-        return new StreamInfo(serviceId, url, originalUrl, streamType, id, name, ageLimit);
-    }
-
-    private static StreamInfo extractStreams(StreamInfo streamInfo, StreamExtractor extractor) throws ExtractionException {
-        /* ---- stream extraction goes here ---- */
-        // At least one type of stream has to be available,
-        // otherwise an exception will be thrown directly into the frontend.
-
-        try {
-            streamInfo.setDashMpdUrl(extractor.getDashMpdUrl());
-        } catch (Exception e) {
-            streamInfo.addError(new ExtractionException("Couldn't get Dash manifest", e));
-        }
-
-        try {
-            streamInfo.setHlsUrl(extractor.getHlsUrl());
-        } catch (Exception e) {
-            streamInfo.addError(new ExtractionException("Couldn't get HLS manifest", e));
-        }
-
-        /*  Load and extract audio */
-        try {
-            streamInfo.setAudioStreams(extractor.getAudioStreams());
-        } catch (Exception e) {
-            streamInfo.addError(new ExtractionException("Couldn't get audio streams", e));
-        }
-        /* Extract video stream url*/
-        try {
-            streamInfo.setVideoStreams(extractor.getVideoStreams());
-        } catch (Exception e) {
-            streamInfo.addError(new ExtractionException("Couldn't get video streams", e));
-        }
-        /* Extract video only stream url*/
-        try {
-            streamInfo.setVideoOnlyStreams(extractor.getVideoOnlyStreams());
-        } catch (Exception e) {
-            streamInfo.addError(new ExtractionException("Couldn't get video only streams", e));
-        }
-
-        // Lists can be null if a exception was thrown during extraction
-        if (streamInfo.getVideoStreams() == null) streamInfo.setVideoStreams(new ArrayList<VideoStream>());
-        if (streamInfo.getVideoOnlyStreams() == null) streamInfo.setVideoOnlyStreams(new ArrayList<VideoStream>());
-        if (streamInfo.getAudioStreams() == null) streamInfo.setAudioStreams(new ArrayList<AudioStream>());
-
-        Exception dashMpdError = null;
-        if (streamInfo.getDashMpdUrl() != null && !streamInfo.getDashMpdUrl().isEmpty()) {
-            try {
-                DashMpdParser.getStreams(streamInfo);
-            } catch (Exception e) {
-                // Sometimes we receive 403 (forbidden) error when trying to download the manifest (similar to what happens with youtube-dl),
-                // just skip the exception (but store it somewhere), as we later check if we have streams anyway.
-                dashMpdError = e;
-            }
-        }
-
-        // Either audio or video has to be available, otherwise we didn't get a stream (since videoOnly are optional, they don't count).
-        if ((streamInfo.videoStreams.isEmpty())
-                && (streamInfo.audioStreams.isEmpty())) {
-
-            if (dashMpdError != null) {
-                // If we don't have any video or audio and the dashMpd 'errored', add it to the error list
-                // (it's optional and it don't get added automatically, but it's good to have some additional error context)
-                streamInfo.addError(dashMpdError);
-            }
-
-            throw new StreamExtractException("Could not get any stream. See error variable to get further details.");
-        }
-
-        return streamInfo;
-    }
-
-    private static StreamInfo extractOptionalData(StreamInfo streamInfo, StreamExtractor extractor) {
-        /*  ---- optional data goes here: ---- */
-        // If one of these fails, the frontend needs to handle that they are not available.
-        // Exceptions are therefore not thrown into the frontend, but stored into the error List,
-        // so the frontend can afterwards check where errors happened.
-
-        try {
-            streamInfo.setThumbnailUrl(extractor.getThumbnailUrl());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setDuration(extractor.getLength());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setUploaderName(extractor.getUploaderName());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setUploaderUrl(extractor.getUploaderUrl());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setDescription(extractor.getDescription());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setViewCount(extractor.getViewCount());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setUploadDate(extractor.getUploadDate());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setUploaderAvatarUrl(extractor.getUploaderAvatarUrl());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setStartPosition(extractor.getTimeStamp());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setLikeCount(extractor.getLikeCount());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setDislikeCount(extractor.getDislikeCount());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setNextVideo(extractor.getNextVideo());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-        try {
-            streamInfo.setSubtitles(extractor.getSubtitlesDefault());
-        } catch (Exception e) {
-            streamInfo.addError(e);
-        }
-
-        streamInfo.setRelatedStreams(ExtractorHelper.getRelatedVideosOrLogError(streamInfo, extractor));
-        return streamInfo;
     }
 
     private StreamType streamType;

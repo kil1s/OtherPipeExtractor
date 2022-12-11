@@ -23,6 +23,8 @@ package org.schabi.newpipe.extractor;
 import com.github.FlorianSteenbuck.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.manage.ServiceManager;
+import org.schabi.newpipe.farm.search.SearchCollectorFactory;
+import org.schabi.newpipe.farm.stream.StreamCollectorFactory;
 
 import java.util.Collection;
 
@@ -32,18 +34,26 @@ import java.util.Collection;
 public class NewPipe/* Tracker */ {
     private HttpDownloader downloader = null;
     private ServiceManager manager;
+    private SearchCollectorFactory searchCollectorFactory = null;
+    private StreamCollectorFactory streamCollectorFactory = null;
 
     private NewPipe(ServiceManager manager, HttpDownloader downloader) {
         this.manager = manager;
         this.downloader = downloader;
     }
 
-    public static void init(HttpDownloader d) {
-        downloader = d;
+    public SearchCollectorFactory getSearchCollectorFactory() {
+        if (searchCollectorFactory == null) {
+            searchCollectorFactory = new SearchCollectorFactory();
+        }
+        return searchCollectorFactory;
     }
 
-    public static HttpDownloader getDownloader() {
-        return downloader;
+    public StreamCollectorFactory getStreamCollectorFactory() {
+        if (streamCollectorFactory == null) {
+            streamCollectorFactory = new StreamCollectorFactory();
+        }
+        return streamCollectorFactory;
     }
 
     public HttpDownloader getDownloader() {

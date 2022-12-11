@@ -49,7 +49,7 @@ public class InfoItemsSearchCollector extends InfoItemsCollector<InfoItem, InfoI
     private final ChannelInfoItemsCollector userCollector;
     private final PlaylistInfoItemsCollector playlistCollector;
 
-    InfoItemsSearchCollector(int serviceId) {
+    public InfoItemsSearchCollector(int serviceId) {
         super(serviceId);
         streamCollector = new StreamInfoItemsCollector(serviceId);
         userCollector = new ChannelInfoItemsCollector(serviceId);

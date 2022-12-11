@@ -1,16 +1,9 @@
 package org.schabi.newpipe.extractor.channel;
 
-import org.schabi.newpipe.extractor.ListExtractor.InfoItemsPage;
 import org.schabi.newpipe.extractor.ListInfo;
-import org.schabi.newpipe.extractor.NewPipe;
-import org.schabi.newpipe.extractor.StreamingService;
-import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler;
-import org.schabi.newpipe.extractor.utils.ExtractorHelper;
-
-import java.io.IOException;
 
 /*
  * Created by Christian Schabesberger on 31.07.16.
@@ -33,69 +26,8 @@ import java.io.IOException;
  */
 
 public class ChannelInfo extends ListInfo<StreamInfoItem> {
-
     public ChannelInfo(int serviceId, ListLinkHandler urlIdHandler, String name) throws ParsingException {
         super(serviceId, urlIdHandler, name);
-    }
-
-    public static ChannelInfo getInfo(String url) throws IOException, ExtractionException {
-        return getInfo(NewPipe.getServiceByUrl(url), url);
-    }
-
-    public static ChannelInfo getInfo(StreamingService service, String url) throws IOException, ExtractionException {
-        ChannelExtractor extractor = service.getChannelExtractor(url);
-        extractor.fetchPage();
-        return getInfo(extractor);
-    }
-
-    public static InfoItemsPage<StreamInfoItem> getMoreItems(StreamingService service, String url, String pageUrl) throws IOException, ExtractionException {
-        return service.getChannelExtractor(url).getPage(pageUrl);
-    }
-
-    public static ChannelInfo getInfo(ChannelExtractor extractor) throws IOException, ExtractionException {
-
-        ChannelInfo info = new ChannelInfo(extractor.getServiceId(),
-                extractor.getUIHandler(),
-                extractor.getName());
-
-
-        try {
-            info.setAvatarUrl(extractor.getAvatarUrl());
-        } catch (Exception e) {
-            info.addError(e);
-        }
-        try {
-            info.setBannerUrl(extractor.getBannerUrl());
-        } catch (Exception e) {
-            info.addError(e);
-        }
-        try {
-            info.setFeedUrl(extractor.getFeedUrl());
-        } catch (Exception e) {
-            info.addError(e);
-        }
-
-        final InfoItemsPage<StreamInfoItem> itemsPage = ExtractorHelper.getItemsPageOrLogError(info, extractor);
-        info.setRelatedItems(itemsPage.getItems());
-        info.setNextPageUrl(itemsPage.getNextPageUrl());
-
-        try {
-            info.setSubscriberCount(extractor.getSubscriberCount());
-        } catch (Exception e) {
-            info.addError(e);
-        }
-        try {
-            info.setDescription(extractor.getDescription());
-        } catch (Exception e) {
-            info.addError(e);
-        }
-        try {
-            info.setDonationLinks(extractor.getDonationLinks());
-        } catch (Exception e) {
-            info.addError(e);
-        }
-
-        return info;
     }
 
     private String avatarUrl;

@@ -21,6 +21,7 @@ public  class KioskList {
     private final int service_id;
     private final HashMap<String, KioskEntry> kioskList = new HashMap<>();
     private String defaultKiosk = null;
+    private NewPipe tracker;
 
     private class KioskEntry {
         public KioskEntry(KioskExtractorFactory ef, ListLinkHandlerFactory h) {
@@ -31,8 +32,9 @@ public  class KioskList {
         final ListLinkHandlerFactory handlerFactory;
     }
 
-    public KioskList(int service_id) {
+    public KioskList(NewPipe tracker, int service_id) {
         this.service_id = service_id;
+        this.tracker = tracker;
     }
 
     public void addKioskEntry(KioskExtractorFactory extractorFactory, ListLinkHandlerFactory handlerFactory, String id)
@@ -72,7 +74,7 @@ public  class KioskList {
         if(ke == null) {
             throw new ExtractionException("No kiosk found with the type: " + kioskId);
         } else {
-            return ke.extractorFactory.createNewKiosk(NewPipe.getService(service_id),
+            return ke.extractorFactory.createNewKiosk(tracker.getService(service_id),
                     ke.handlerFactory.fromId(kioskId).getUrl(), kioskId);
         }
     }

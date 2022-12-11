@@ -69,7 +69,7 @@ public abstract class InfoItemsCollector<I extends InfoItem, E extends InfoItemE
      * Add an item
      * @param item the item
      */
-    protected void addItem(I item) {
+    public void addItem(I item) {
         itemList.add(item);
     }
 

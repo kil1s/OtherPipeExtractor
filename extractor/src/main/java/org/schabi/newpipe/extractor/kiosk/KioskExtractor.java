@@ -20,6 +20,8 @@ package org.schabi.newpipe.extractor.kiosk;
  * along with NewPipe.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+
 import org.schabi.newpipe.extractor.ListExtractor;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
@@ -32,10 +34,11 @@ public abstract class KioskExtractor extends ListExtractor<StreamInfoItem> {
     private String contentCountry = null;
     private final String id;
 
-    public KioskExtractor(StreamingService streamingService,
+    public KioskExtractor(HttpDownloader downloader,
+                          StreamingService streamingService,
                           ListLinkHandler urlIdHandler,
                           String kioskId) {
-        super(streamingService, urlIdHandler);
+        super(downloader, streamingService, urlIdHandler);
         this.id = kioskId;
     }
 

@@ -30,17 +30,13 @@ public abstract class Info implements Serializable {
     private final String originalUrl;
     private final String name;
 
-    private final List<Throwable> errors = new ArrayList<>();
-
-    public void addError(Throwable throwable) {
-        this.errors.add(throwable);
-    }
-
-    public void addAllErrors(Collection<Throwable> errors) {
-        this.errors.addAll(errors);
-    }
-
-    public Info(int serviceId, String id, String url, String originalUrl, String name) {
+    public Info(
+            int serviceId,
+            String id,
+            String url,
+            String originalUrl,
+            String name
+    ) {
         this.serviceId = serviceId;
         this.id = id;
         this.url = url;
@@ -48,12 +44,18 @@ public abstract class Info implements Serializable {
         this.name = name;
     }
 
-    public Info(int serviceId, LinkHandler linkHandler, String name) {
-        this(serviceId,
-                linkHandler.getId(),
-                linkHandler.getUrl(),
-                linkHandler.getOriginalUrl(),
-                name);
+    public Info(
+        int serviceId,
+        LinkHandler linkHandler,
+        String name
+    ) {
+        this(
+            serviceId,
+            linkHandler.getId(),
+            linkHandler.getUrl(),
+            linkHandler.getOriginalUrl(),
+            name
+        );
     }
 
     @Override
@@ -80,9 +82,5 @@ public abstract class Info implements Serializable {
 
     public String getName() {
         return name;
-    }
-
-    public List<Throwable> getErrors() {
-        return errors;
     }
 }
