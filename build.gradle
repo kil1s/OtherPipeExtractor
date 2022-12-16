@@ -1,5 +1,7 @@
 allprojects {
     apply plugin: 'java-library'
+    apply plugin: 'org.gradle.java'
+    apply plugin: 'org.gradle.maven-publish'
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
@@ -36,7 +38,7 @@ task aggregatedJavadocs(type: Javadoc, group: 'Documentation') {
     title = "$project.name $version"
     // options.memberLevel = JavadocMemberLevel.PRIVATE
     options.links 'https://docs.oracle.com/javase/8/docs/api/'
-    
+
     subprojects.each { project ->
         project.tasks.withType(Javadoc).each { javadocTask ->
             source += javadocTask.source
@@ -44,5 +46,20 @@ task aggregatedJavadocs(type: Javadoc, group: 'Documentation') {
             excludes += javadocTask.excludes
             includes += javadocTask.includes
         }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.github.kil1s.OtherPipeExtractor'
+            artifactId = 'library'
+            version = '0.0.1'
+
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
     }
 }
