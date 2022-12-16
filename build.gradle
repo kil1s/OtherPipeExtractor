@@ -48,18 +48,3 @@ task aggregatedJavadocs(type: Javadoc, group: 'Documentation') {
         }
     }
 }
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = 'com.github.kil1s.OtherPipeExtractor'
-            artifactId = 'library'
-            version = '0.0.1'
-
-            from components.java
-        }
-    }
-    repositories {
-        mavenLocal()
-    }
-}
