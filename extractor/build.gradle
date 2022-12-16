@@ -6,12 +6,12 @@ dependencies {
     implementation 'org.mozilla:rhino:1.7.7.1'
     implementation 'com.github.spotbugs:spotbugs-annotations:3.1.0'
     implementation 'org.nibor.autolink:autolink:0.8.0'
-    implementation 'com.github.kil1s:OtherFeatures:j0.0.1'
-    implementation 'com.github.kil1s:OtherUrl:dev-SNAPSHOT'
-    implementation 'com.github.kil1s:OtherMap:dev-SNAPSHOT'
-    implementation 'com.github.kil1s:OtherSettings:4d997dd54c'
-    implementation 'com.github.kil1s:OtherHttp:master-SNAPSHOT'
-    implementation 'com.github.kil1s:OtherParams:master-SNAPSHOT'
+    implementation 'com.github.kil1s:OtherFeatures:086cad1042'
+    implementation 'com.github.kil1s:OtherUrl:71252c88a9'
+    implementation 'com.github.kil1s:OtherMap:9dcdd09379'
+    implementation 'com.github.kil1s:OtherSettings:3a3bf8b395'
+    implementation 'com.github.kil1s:OtherHttp:d0f0785083'
+    implementation 'com.github.kil1s:OtherParams:6a81484d97'
 
     testImplementation 'junit:junit:4.12'
 }

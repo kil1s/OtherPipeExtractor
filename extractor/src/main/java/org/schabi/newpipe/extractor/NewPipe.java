@@ -20,7 +20,8 @@ package org.schabi.newpipe.extractor;
  * along with NewPipe.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import com.github.kil1s.other.http.HttpDownloader;
+import com.github.kil1s.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.manage.ServiceManager;
 import org.schabi.newpipe.farm.search.SearchCollectorFactory;

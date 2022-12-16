@@ -1,10 +1,11 @@
 package org.schabi.newpipe.extractor.manage;
 
-import com.github.FlorianSteenbuck.other.settings.exceptions.UnsupportedSettingValueException;
-import com.github.FlorianSteenbuck.other.settings.exceptions.WrongSettingsDataException;
-import com.github.FlorianSteenbuck.other.settings.model.provider.SettingProvider;
-import com.github.FlorianSteenbuck.other.settings.model.settings.PreStoredSettings;
-import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.WriteableSettings;
+import com.github.kil1s.other.settings.exceptions.UnsupportedSettingValueException;
+import com.github.kil1s.other.settings.exceptions.WrongSettingsDataException;
+import com.github.kil1s.other.settings.model.provider.SettingProvider;
+import com.github.kil1s.other.settings.model.settings.PreStoredSettings;
+import com.github.kil1s.other.settings.model.settings.interfaces.Settings;
+import com.github.kil1s.other.settings.model.settings.interfaces.WriteableSettings;
 import com.grack.nanojson.JsonObject;
 
 import org.schabi.newpipe.extractor.StreamingService;
@@ -107,7 +108,7 @@ public class ServiceInfoFactory {
             }
         }
 
-        return new StreamingServiceInfo(id, new PreStoredSettings(settings), typ);
+        return new StreamingServiceInfo(id, (Settings) new PreStoredSettings(settings), typ);
     }
 
     public @Nullable StreamingServiceInfo service(
@@ -136,6 +137,6 @@ public class ServiceInfoFactory {
             }
         }
         
-        return new StreamingServiceInfo(id, settings, typ);
+        return new StreamingServiceInfo(id, (Settings) settings, typ);
     }
 }

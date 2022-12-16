@@ -1,9 +1,8 @@
 package org.schabi.newpipe;
 
-import com.github.FlorianSteenbuck.other.http.HttpDownloader;
-import com.github.FlorianSteenbuck.other.http.resp.headers.HttpHeadExecutionTyp;
+import com.github.kil1s.other.http.HttpDownloader;
+import com.github.kil1s.other.http.resp.headers.HttpHeadExecutionTyp;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +13,8 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 /*

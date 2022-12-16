@@ -1,7 +1,7 @@
 package org.schabi.newpipe.extractor.manage;
 
-import com.github.FlorianSteenbuck.other.settings.model.provider.SettingProvider;
-import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
+import com.github.kil1s.other.settings.model.provider.SettingProvider;
+import com.github.kil1s.other.settings.model.settings.interfaces.Settings;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;

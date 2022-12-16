@@ -20,7 +20,7 @@ package org.schabi.newpipe.extractor.stream;
  * along with NewPipe.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import com.github.kil1s.other.http.HttpDownloader;
 
 import org.schabi.newpipe.extractor.Extractor;
 import org.schabi.newpipe.extractor.StreamingService;

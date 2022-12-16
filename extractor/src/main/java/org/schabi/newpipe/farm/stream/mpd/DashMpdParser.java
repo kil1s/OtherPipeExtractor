@@ -1,6 +1,7 @@
 package org.schabi.newpipe.farm.stream.mpd;
 
-import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import com.github.kil1s.other.http.HttpDownloader;
+import com.github.kil1s.other.http.HttpDownloader;
 import org.schabi.newpipe.extractor.MediaFormat;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;

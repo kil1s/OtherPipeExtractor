@@ -5,10 +5,10 @@ import org.schabi.newpipe.extractor.constants.Encodings;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.navigator.method.NavigatorPageRequestMethod;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
-import com.github.FlorianSteenbuck.other.url.helper.UrlParsingHelper;
-import com.github.FlorianSteenbuck.other.url.model.UrlParsingFeature;
-import com.github.FlorianSteenbuck.other.url.model.UrlQuery;
-import com.github.FlorianSteenbuck.other.url.navigator.UrlNavigator;
+import com.github.kil1s.other.url.helper.UrlParsingHelper;
+import com.github.kil1s.other.url.model.UrlParsingFeature;
+import com.github.kil1s.other.url.model.UrlQuery;
+import com.github.kil1s.other.url.navigator.UrlNavigator;
 
 import java.io.IOException;
 import java.util.HashMap;

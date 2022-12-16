@@ -1,6 +1,6 @@
 package org.schabi.newpipe.extractor;
 
-import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
+import com.github.kil1s.other.settings.model.settings.interfaces.Settings;
 
 public class SettingIdGeneratorExtension {
     protected SettingsOrganisator organisator;

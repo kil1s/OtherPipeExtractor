@@ -1,7 +1,7 @@
 package org.schabi.newpipe.extractor.manage.typing;
 
-import com.github.FlorianSteenbuck.other.settings.model.provider.SettingProvider;
-import com.github.FlorianSteenbuck.other.settings.model.settings.interfaces.Settings;
+import com.github.kil1s.other.settings.model.provider.SettingProvider;
+import com.github.kil1s.other.settings.model.settings.interfaces.Settings;
 
 import org.schabi.newpipe.model.Language;
 import org.schabi.newpipe.extractor.StreamingService;

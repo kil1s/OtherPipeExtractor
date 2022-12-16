@@ -1,6 +1,6 @@
 package org.schabi.newpipe.extractor.playlist;
 
-import com.github.FlorianSteenbuck.other.http.HttpDownloader;
+import com.github.kil1s.other.http.HttpDownloader;
 
 import org.schabi.newpipe.extractor.ListExtractor;
 import org.schabi.newpipe.extractor.StreamingService;
