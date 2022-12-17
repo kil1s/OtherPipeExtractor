@@ -13,7 +13,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class SettingsTyping implements ServiceTyping {
+public final class SettingsTyping extends UnifiedTyping {
     private int id;
 
     public SettingsTyping(int id) {
