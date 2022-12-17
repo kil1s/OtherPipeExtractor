@@ -22,7 +22,7 @@ public abstract class Extractor {
     @Nullable
     private boolean pageFetched = false;
 
-    public Extractor(final HttpDownloader downloader, final StreamingService service, final LinkHandler uIHandler) {
+    public Extractor(@Nonnull final HttpDownloader downloader, final StreamingService service, final LinkHandler uIHandler) {
         if(service == null) throw new NullPointerException("service is null");
         if(uIHandler == null) throw new NullPointerException("LinkHandler is null");
         if(downloader == null) throw new NullPointerException("downloader is null");

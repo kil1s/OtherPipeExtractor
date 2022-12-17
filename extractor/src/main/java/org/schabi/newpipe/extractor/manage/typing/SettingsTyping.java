@@ -59,8 +59,8 @@ public class SettingsTyping implements ServiceTyping {
     @SuppressWarnings({"RedundantThrows", "DuplicateThrows"})
     @Override
     public StreamingService create(
-            int version, StreamingServiceInfo info,
-            int id, @Nullable Map<String, ?> setting, Language language
+        int version, StreamingServiceInfo info,
+        int id, @Nullable Map<String, ?> setting, Language language
     ) throws Exception, InvocationTargetException, InstantiationException, IllegalAccessException {
         return create(version, info, id, language, setting);
     }
@@ -84,7 +84,7 @@ public class SettingsTyping implements ServiceTyping {
     }
 
     @SuppressWarnings({"RedundantThrows", "DuplicateThrows"})
-    private StreamingService create(
+    protected StreamingService create(
         int version, StreamingServiceInfo info,
         int id, Language language, @Nullable Object settings
     ) throws Exception, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -116,6 +116,6 @@ public class SettingsTyping implements ServiceTyping {
                     return (StreamingService) serviceConstructor.newInstance();
             }
         }
-        throw new Exception("Can not find matching contructor");
+        throw new Exception("Can not find matching constructor");
     }
 }
