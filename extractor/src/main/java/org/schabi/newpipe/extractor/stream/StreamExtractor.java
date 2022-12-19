@@ -46,6 +46,9 @@ public abstract class StreamExtractor extends Extractor {
         super(downloader, service, linkHandler);
     }
 
+    public abstract boolean isOnline();
+    public abstract boolean isAccessAble();
+
     @Nonnull
     public abstract String getUploadDate() throws ParsingException;
     @Nonnull
