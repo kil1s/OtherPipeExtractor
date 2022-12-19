@@ -1,14 +1,11 @@
 package org.schabi.newpipe.farm.stream.mpd;
 
 import com.github.kil1s.other.http.HttpDownloader;
-import com.github.kil1s.other.http.HttpDownloader;
+import static org.schabi.newpipe.extractor.stream.Stream.ID_UNKNOWN;
 import org.schabi.newpipe.extractor.MediaFormat;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException;
-import org.schabi.newpipe.extractor.stream.AudioStream;
-import org.schabi.newpipe.extractor.stream.Stream;
-import org.schabi.newpipe.extractor.stream.StreamInfo;
-import org.schabi.newpipe.extractor.stream.VideoStream;
+import org.schabi.newpipe.extractor.stream.*;
 import org.schabi.newpipe.extractor.utils.ItagItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,6 +60,7 @@ public class DashMpdParser {
      * @param streamInfo where the parsed streams will be added
      */
     public void getStreams(StreamInfo streamInfo) throws DashMpdParsingException, ReCaptchaException {
+        String manifestUrl = streamInfo.getDashMpdUrl();
         String dashDoc;
         try {
             dashDoc = downloader.download(streamInfo.getDashMpdUrl());
@@ -89,14 +87,24 @@ public class DashMpdParser {
                         MediaFormat mediaFormat = MediaFormat.getFromMimeType(mimeType);
 
                         if (itag.itagType.equals(ItagItem.ItagType.AUDIO)) {
-                            AudioStream audioStream = new AudioStream(url, mediaFormat, itag.avgBitrate);
+                            AudioStream audioStream = new AudioStream(
+                                    id, url, true,
+                                    mediaFormat, DeliveryMethod.DASH,
+                                    itag.avgBitrate, manifestUrl,
+                                    null, null, itag
+                            );
 
                             if (!Stream.containSimilarStream(audioStream, streamInfo.getAudioStreams())) {
                                 streamInfo.getAudioStreams().add(audioStream);
                             }
                         } else {
                             boolean isVideoOnly = itag.itagType.equals(ItagItem.ItagType.VIDEO_ONLY);
-                            VideoStream videoStream = new VideoStream(url, mediaFormat, itag.resolutionString, isVideoOnly);
+                            VideoStream videoStream = new VideoStream(
+                                id, url, true,
+                                mediaFormat, DeliveryMethod.DASH,
+                                itag.resolutionString,
+                                isVideoOnly, manifestUrl, itag
+                            );
 
                             if (isVideoOnly) {
                                 if (!Stream.containSimilarStream(videoStream, streamInfo.getVideoOnlyStreams())) {

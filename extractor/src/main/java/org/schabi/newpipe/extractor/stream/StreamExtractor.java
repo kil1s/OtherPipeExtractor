@@ -1,7 +1,7 @@
 package org.schabi.newpipe.extractor.stream;
 
 /*
- * Created by Christian Schabesberger on 10.08.15.
+ * Created by Christian Schabesberger on 10.08.18.
  *
  * Copyright (C) Christian Schabesberger 2016 <chris.schabesberger@mailbox.org>
  * StreamExtractor.java is part of NewPipe.
@@ -31,6 +31,7 @@ import org.schabi.newpipe.extractor.linkhandler.LinkHandler;
 import org.schabi.newpipe.extractor.utils.Parser;
 
 import javax.annotation.Nonnull;
+
 import java.io.IOException;
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package org.schabi.newpipe.extractor.manage.typing;
 
+import com.github.kil1s.other.http.HttpDownloader;
 import com.github.kil1s.other.settings.model.provider.SettingProvider;
 import com.github.kil1s.other.settings.model.settings.interfaces.Settings;
 
@@ -14,9 +15,11 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public final class SettingsTyping extends UnifiedTyping {
+    private HttpDownloader downloader;
     private int id;
 
-    public SettingsTyping(int id) {
+    public SettingsTyping(HttpDownloader downloader, int id) {
+        this.downloader = downloader;
         this.id = id;
     }
 
@@ -92,24 +95,26 @@ public final class SettingsTyping extends UnifiedTyping {
         for (Constructor serviceConstructor : serviceTyp.getConstructors()) {
             Class[] types = serviceConstructor.getParameterTypes();
             switch (types.length) {
+                case 4:
                 case 3:
-                case 2:
                     boolean configured = settings == null;
                     if (types.length == 3) {
                         if (configured) {
                             break;
                         }
-                        return (StreamingService) serviceConstructor.newInstance(id, settings, language);
+                        return (StreamingService) serviceConstructor.newInstance(id, downloader, settings, language);
                     }
 
                     if (serviceConstructor.getParameterTypes()[1].equals(Language.class)) {
-                        return (StreamingService) serviceConstructor.newInstance(id, language);
+                        return (StreamingService) serviceConstructor.newInstance(id, downloader, language);
                     }
 
                     if (configured) {
                         break;
                     }
-                    return (StreamingService) serviceConstructor.newInstance(id, settings);
+                    return (StreamingService) serviceConstructor.newInstance(id, downloader, settings);
+                case 2:
+                    return (StreamingService) serviceConstructor.newInstance(id, downloader);
                 case 1:
                     return (StreamingService) serviceConstructor.newInstance(id);
                 case 0:

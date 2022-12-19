@@ -1,5 +1,6 @@
 package org.schabi.newpipe.extractor.manage.typing;
 
+import com.github.kil1s.other.http.HttpDownloader;
 import com.github.kil1s.other.settings.model.provider.SettingProvider;
 import com.github.kil1s.other.settings.model.settings.interfaces.Settings;
 
@@ -13,9 +14,11 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class NewPipeTyping implements ServiceTyping {
+    private HttpDownloader downloader;
     private int id;
 
-    public NewPipeTyping(int id) {
+    public NewPipeTyping(HttpDownloader downloader, int id) {
+        this.downloader = downloader;
         this.id = id;
     }
 
@@ -66,6 +69,6 @@ public class NewPipeTyping implements ServiceTyping {
     private StreamingService create(
         int version, StreamingServiceInfo info, int id
     ) throws Exception, InvocationTargetException, InstantiationException, IllegalAccessException {
-        return (StreamingService) info.getTyp().getConstructors()[0].newInstance(id);
+        return (StreamingService) info.getTyp().getConstructors()[0].newInstance(id, downloader);
     }
 }
